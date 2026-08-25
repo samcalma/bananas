@@ -88,6 +88,58 @@
   }
 
   /* ---------- Filter bar ---------- */
+  /* ---------- Tabs ---------- */
+  .tabbar{
+    max-width:1040px;
+    margin:22px auto 0;
+    padding:0 24px;
+    display:flex;
+    gap:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .tab{
+    border:none;
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'Manrope',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    padding:12px 6px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab:hover{ color:var(--ink); }
+  .tab.active{
+    color:var(--ink);
+    border-bottom-color:var(--gold);
+  }
+  .tab:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  .empty-state{
+    text-align:center;
+    padding:64px 24px;
+    border:1px dashed var(--line);
+    border-radius:16px;
+    background:#fff;
+  }
+  .empty-title{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .empty-sub{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
   .filterbar{
     max-width:1040px;
     margin:-26px auto 0;
@@ -248,15 +300,50 @@
     text-decoration:none;
   }
 
+  .ig-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;
+    height:26px;
+    margin-left:8px;
+    border-radius:7px;
+    color:var(--ink-soft);
+    transition:color .15s ease, background .15s ease;
+    vertical-align:middle;
+  }
+  .ig-link:hover{
+    color:#fff;
+    background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  }
+  .ig-link svg{ width:16px; height:16px; }
+
   .card.flagged{
     border-color: rgba(166,82,46,0.4);
     background: linear-gradient(180deg, rgba(166,82,46,0.05), #fff 60px);
   }
+
+  .rating{
+    margin:2px 0 0;
+    font-size:12.5px;
+    font-weight:700;
+    color:#8A6A1F;
+  }
+  .rating span{
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:11.5px;
+  }
+  .rating-low{ color:var(--rust); }
+
+  .price-note{
     margin:8px 0 0;
     font-size:12px;
     line-height:1.5;
     color:var(--ink-soft);
   }
+
+  footer{
     max-width:1040px;
     margin:0 auto;
     padding:0 24px 60px;
@@ -298,8 +385,8 @@
 <section class="hero">
   <div class="hero-inner">
     <p class="eyebrow">Makati CBD · Metro Manila</p>
-    <h1>Hotels near Makati<br>CBD / <em>Greenbelt</em></h1>
-    <p class="sub">Shortlist anchored on Greenbelt Mall — walking distance noted for each. Hotel Céleste is one option among several.</p>
+    <h1>Makati CBD /<br><em>Greenbelt</em> Guide</h1>
+    <p class="sub">Anchored on Greenbelt Mall — hotels, restaurants, and coffee within walking distance.</p>
   </div>
   <svg class="skyline" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
     <g fill="#F4EFE2">
@@ -321,8 +408,15 @@
   </svg>
 </section>
 
+<nav class="tabbar" role="tablist" aria-label="Section">
+  <button class="tab active" data-tab="hotels" role="tab" aria-selected="true">Hotels</button>
+  <button class="tab" data-tab="restaurants" role="tab" aria-selected="false">Restaurants</button>
+  <button class="tab" data-tab="coffee" role="tab" aria-selected="false">Coffee</button>
+</nav>
+
 <main>
-  <p class="count" id="count">5 hotels</p>
+  <div class="panel active" id="panel-hotels">
+  <p class="count" id="count">6 hotels</p>
   <div class="grid" id="grid">
 
     <article class="card" data-tier="boutique">
@@ -331,10 +425,12 @@
         <span class="tier boutique">Boutique</span>
       </div>
       <p class="area">02 San Lorenzo Dr cnr A. Arnaiz Ave · ~330m from Greenbelt</p>
+      <p class="rating">★ 4.4 <span>(330 Google reviews)</span></p>
       <p class="blurb">European-style boutique, 30 rooms. Rooftop terrace, marble bathrooms, in-house Italian restaurant (Lucia Ristorante). No pool — the trade-off for the size and character.</p>
       <div class="card-foot">
         <span class="price">~$76 <span>/ night, est.</span></span>
         <a class="note-btn" href="http://www.hotelceleste.ph/" target="_blank" rel="noopener">website ↗</a>
+        <a class="ig-link" href="https://www.instagram.com/hotelcelesteph/" target="_blank" rel="noopener" aria-label="Hotel Céleste on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
       </div>
       <p class="price-note">Oct 29 – Nov 1 (3 nights) · October is historically one of the cheapest months for this hotel · ~$228 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
     </article>
@@ -345,10 +441,12 @@
         <span class="tier luxury">Luxury</span>
       </div>
       <p class="area">118 Legazpi St, Legazpi Village · ~150m from Greenbelt</p>
+      <p class="rating">★ 4.7 <span>(4,468 Google reviews)</span></p>
       <p class="blurb">5-star, all-suite, directly across from Greenbelt 1 &amp; 5. Kitchenettes with full-size appliances, 25-yard indoor lap pool, Club Lounge. Priced noticeably below other Makati 5-stars for the location.</p>
       <div class="card-foot">
         <span class="price">~$106 <span>/ night, est.</span></span>
         <a class="note-btn" href="https://www.booking.com/hotel/ph/makati-diamond-residences.html" target="_blank" rel="noopener">website ↗</a>
+        <a class="ig-link" href="https://www.instagram.com/makatidiamondresidences/" target="_blank" rel="noopener" aria-label="Makati Diamond Residences on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
       </div>
       <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$106, range roughly $89–$180 depending on room/dates · ~$318 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
     </article>
@@ -359,6 +457,7 @@
         <span class="tier business">Business</span>
       </div>
       <p class="area">114 Legazpi St, Legazpi Village · ~200m from Greenbelt</p>
+      <p class="rating">★ 4.1 <span>(577 Google reviews)</span></p>
       <p class="blurb">Low-rise, older 2/3-star property right across from Greenbelt 5. Rooftop pool, on-site restaurant. Reviews are mixed on room freshness — value-priced for the location rather than polished.</p>
       <div class="card-foot">
         <span class="price">~$43 <span>/ night, est.</span></span>
@@ -373,10 +472,12 @@
         <span class="tier luxury">Luxury</span>
       </div>
       <p class="area">7862 Makati Ave, Poblacion · ~1.6km from Greenbelt (not walkable — 3–5 min drive)</p>
+      <p class="rating">★ 4.6 <span>(9,294 Google reviews)</span></p>
       <p class="blurb">5-star, first of its kind in Poblacion. Japanese-style onsen spa, jellyfish-tank rooftop bar, acrylic-bottomed pool. Strong on amenities and nightlife access, but the only hotel on this list outside comfortable walking distance of Greenbelt.</p>
       <div class="card-foot">
         <span class="price">~$80 <span>/ night, est.</span></span>
         <a class="note-btn" href="https://imhotel.com/" target="_blank" rel="noopener">website ↗</a>
+        <a class="ig-link" href="https://www.instagram.com/imhotelph/" target="_blank" rel="noopener" aria-label="I'M Hotel on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
       </div>
       <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate roughly $73–$90 depending on source/dates · ~$240 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
     </article>
@@ -387,6 +488,7 @@
         <span class="tier business">Business</span>
       </div>
       <p class="area">101 Dela Rosa St, Legazpi Village · ~200m from Greenbelt</p>
+      <p class="rating rating-low">★ 3.7 <span>(992 Google reviews)</span></p>
       <p class="blurb">Cheapest on this list and well-located, but 3.7★ isn't noise — recurring reports of broken/manually-operated elevators (shut off 11pm–4am at one point), cleanliness complaints (bugs, stained sheets, mould smell), and a cash/card-only ₱2,000 deposit collected at check-in. Rooms themselves get decent marks when they work.</p>
       <div class="card-foot">
         <span class="price">~$29 <span>/ night, est.</span></span>
@@ -395,11 +497,186 @@
       <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$29–35, range roughly $28–$96 by room type · ~$90–105 total (base room) before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
     </article>
 
+    <article class="card" data-tier="business">
+      <div class="card-top">
+        <h3>Citadines Benavidez Makati</h3>
+        <span class="tier business">Business</span>
+      </div>
+      <p class="area">110 Benavidez St, San Lorenzo Village · ~530m from Greenbelt (~8 min walk)</p>
+      <p class="rating">★ 4.3 <span>(310 Google reviews)</span></p>
+      <p class="blurb">Serviced apartments, kitchenettes with washing machine, rooftop pool. Quiet residential street rather than right on top of the mall — trade a couple minutes' walk for lower noise and better value than the closer 5-stars.</p>
+      <div class="card-foot">
+        <span class="price">~$80 <span>/ night, est.</span></span>
+        <a class="note-btn" href="https://www.booking.com/hotel/ph/citadines-benavidez-makati.html" target="_blank" rel="noopener">website ↗</a>
+        <a class="ig-link" href="https://www.instagram.com/citadinesbenavidezmakati/" target="_blank" rel="noopener" aria-label="Citadines Benavidez Makati on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$71–$91 · ~$240 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
   </div>
 
   <div class="map-card area-map">
     <div id="area-leaflet-map" style="width:100%; height:380px;"></div>
     <p class="map-caption">Centered on Greenbelt Mall — pins mark each listed hotel with its walking distance.</p>
+  </div>
+  </div>
+
+  <div class="panel" id="panel-restaurants">
+    <p class="count">6 restaurants</p>
+    <div class="grid">
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>Din Tai Fung</h3>
+          <span class="tier business">Taiwanese</span>
+        </div>
+        <p class="area">2F, Greenbelt 3, Ayala Center · inside Greenbelt</p>
+        <p class="rating">★ 4.6 <span>(1,488 Google reviews)</span></p>
+        <p class="blurb">The Xiao Long Bao (soup dumpling) standard-bearer. 200-seat branch, fast-moving service despite a 30–45 min wait at peak times. Pork Chop Fried Rice and Spicy Shrimp &amp; Pork Wontons are the recurring standouts, alongside the chocolate xiaolongbao for dessert.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+6327121933">+63 2 7121 1933</a>
+          <a class="ig-link" href="https://www.instagram.com/dintaifungph/" target="_blank" rel="noopener" aria-label="Din Tai Fung Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm Mon–Thu &amp; Sun · 11am–10pm Fri · 10am–10pm Sat.</p>
+      </article>
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>Your Local</h3>
+          <span class="tier boutique">Asian Contemporary</span>
+        </div>
+        <p class="area">106 Esteban St cnr V.A. Rufino St, Legazpi Village · ~600m from Greenbelt</p>
+        <p class="rating">★ 4.7 <span>(1,925 Google reviews)</span></p>
+        <p class="blurb">MICHELIN Bib Gourmand pick — unassuming entrance, butcher-tiled walls, open kitchen. Filipino-fusion leaning, wallet-friendly for the quality. Miso tuna tartare and the pares get recurring praise. No reservations online; can have a wait without one.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639774879236">+63 977 487 9236</a>
+          <a class="ig-link" href="https://www.instagram.com/yourlocalph/" target="_blank" rel="noopener" aria-label="Your Local on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–2pm &amp; 6–10pm Mon–Thu &amp; Sun · 11am–2pm &amp; 6–11pm Fri · 10am–2pm &amp; 6–11pm Sat.</p>
+      </article>
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>Spotted Pig Cafe</h3>
+          <span class="tier boutique">Brunch / Cafe</span>
+        </div>
+        <p class="area">109 Esteban St, Legazpi Village · ~600m from Greenbelt (across from Your Local)</p>
+        <p class="rating">★ 4.4 <span>(594 Google reviews)</span></p>
+        <p class="blurb">Beach-cafe vibe brunch spot. Reuben sandwich and Eggs Benny are the standouts; sea-salt and matcha lattes also get called out. Sunday mornings draw a queue but it moves fast. One review flagged a roach sighting — worth keeping in mind.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639178822208">+63 917 882 2208</a>
+          <a class="ig-link" href="https://www.instagram.com/spottedpigmnl/" target="_blank" rel="noopener" aria-label="Spotted Pig on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–10pm daily. No restroom onsite.</p>
+      </article>
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>Manam at the Triangle</h3>
+          <span class="tier boutique">Modern Filipino</span>
+        </div>
+        <p class="area">Restaurant Arcade, Ayala Triangle Walkways · ~350m from Greenbelt</p>
+        <p class="rating">★ 4.8 <span>(1,359 Google reviews)</span></p>
+        <p class="blurb">MICHELIN Bib Gourmand — the flagship branch, and the only one that takes reservations. Sinigang sa pakwan, 3-way sisig, and chicharon bulaklak get the most love. Consistently busy, especially dinner.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639671904721">+63 967 190 4721</a>
+          <a class="ig-link" href="https://www.instagram.com/manam.triangle/" target="_blank" rel="noopener" aria-label="Manam at the Triangle on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 10am–10pm Mon–Fri · 9am–10pm Sat–Sun.</p>
+      </article>
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>Sarsá Kitchen + Bar</h3>
+          <span class="tier boutique">Filipino / Negrense</span>
+        </div>
+        <p class="area">The Frabella 1, 109 Rada St, Legazpi Village · ~950m from Greenbelt</p>
+        <p class="rating">★ 4.3 <span>(1,015 Google reviews)</span></p>
+        <p class="blurb">MICHELIN Bib Gourmand — Chef JP Anglo's take on Bacolod/Negrense cuisine. 3-Way Pork Sisig and Sizzling Kansi are the signatures. Reviews are mixed on consistency; go for the sisig and kansi specifically.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639175280115">+63 917 528 0115</a>
+          <a class="ig-link" href="https://www.instagram.com/sarsa_mnl/" target="_blank" rel="noopener" aria-label="Sarsá Kitchen + Bar on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–10pm Sun–Thu · 11am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="restaurant">
+        <div class="card-top">
+          <h3>LaPita by Chef Sam</h3>
+          <span class="tier boutique">Levantine / Middle Eastern</span>
+        </div>
+        <p class="area">107 L.P. Leviste St, Legazpi Village · ~750m from Greenbelt</p>
+        <p class="rating">★ 4.6 <span>(36 Google reviews)</span></p>
+        <p class="blurb">MICHELIN Bib Gourmand — Chef Sam Rohana's Levantine spot, expanded from a Poblacion original into Legazpi/Salcedo. Hummus and house-made pita are the standouts; muhallabia for dessert. Small footprint, low review count so far given it's a newer branch.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639171573528">+63 917 157 3528</a>
+          <a class="ig-link" href="https://www.instagram.com/lapita.mkt/" target="_blank" rel="noopener" aria-label="LaPita on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–12am Mon · 11am–1am Tue–Sun.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-coffee">
+    <p class="count">3 coffee spots</p>
+    <div class="grid">
+
+      <article class="card" data-tier="coffee">
+        <div class="card-top">
+          <h3>Yardstick Coffee</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">106 Esteban St, Legazpi Village (Universal LMS Building) · ~600m from Greenbelt</p>
+        <p class="rating">★ 4.5 <span>(1,327 Google reviews)</span></p>
+        <p class="blurb">The original flagship — roastery-first specialty cafe open since 2014, warehouse-chic space with a La Marzocco bar. Sea-Salt Latte is the recurring favorite. Gets crowded, especially weekends, but the queue is organized.</p>
+        <div class="card-foot">
+          <span class="price">$ <span>budget-friendly</span></span>
+          <a class="note-btn" href="tel:+6328372389" target="_blank" rel="noopener">+63 2 8372 3891</a>
+          <a class="ig-link" href="https://www.instagram.com/yardstickcoffee/" target="_blank" rel="noopener" aria-label="Yardstick Coffee on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–8pm Mon–Thu · 7am–10pm Fri–Sun.</p>
+      </article>
+
+      <article class="card" data-tier="coffee">
+        <div class="card-top">
+          <h3>H Proper Coffee Roasters</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">Restaurant Arcade, Ayala Triangle Walkways · ~350m from Greenbelt</p>
+        <p class="rating">★ 4.7 <span>(1,620 Google reviews)</span></p>
+        <p class="blurb">Third-wave roastery with a fuller food menu than most cafes — truffle rigatoni, farmhouse beef bowl, shakshouka alongside the coffee program. Two floors, balcony overlooking Ayala Triangle Gardens. Leans pricier; reserve ahead if you want food.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="https://www.hproper.com/" target="_blank" rel="noopener">website ↗</a>
+          <a class="ig-link" href="https://www.instagram.com/hpropercoffeeroasters/" target="_blank" rel="noopener" aria-label="H Proper Coffee Roasters on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 6:30am–11:00pm daily · +63 917 192 0873.</p>
+      </article>
+
+      <article class="card" data-tier="coffee">
+        <div class="card-top">
+          <h3>Toby's Estate Coffee Roasters</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">G/F V Corporate Center, 125 L.P. Leviste St, Salcedo Village · ~950m from Greenbelt</p>
+        <p class="rating">★ 4.2 <span>(642 Google reviews)</span></p>
+        <p class="blurb">Sydney-origin specialty roaster, spacious and quiet with a full breakfast menu — Eggs Benedict and single-origin drip get called out. One of 16+ branches in Metro Manila; this Salcedo one is the closest to Greenbelt.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="https://tobysestateph.com/" target="_blank" rel="noopener">website ↗</a>
+          <a class="ig-link" href="https://www.instagram.com/tobysestateph/" target="_blank" rel="noopener" aria-label="Toby's Estate Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–10pm daily.</p>
+      </article>
+
+    </div>
   </div>
 </main>
 
@@ -408,7 +685,27 @@
 </footer>
 
 <script>
-  const map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5535828, 121.0218631], 16);
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      const target = 'panel-' + tab.dataset.tab;
+      panels.forEach(p => p.classList.toggle('active', p.id === target));
+
+      if (tab.dataset.tab === 'hotels' && window.map) {
+        setTimeout(() => window.map.invalidateSize(), 50);
+      }
+    });
+  });
+</script>
+
+<script>
+  const map = window.map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5535828, 121.0218631], 16);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -439,7 +736,8 @@
     { name: 'Makati Diamond Residences', lat: 14.5538235, lng: 121.0208774, dist: '~150m from Greenbelt' },
     { name: 'The Charter House', lat: 14.5537815, lng: 121.0213030, dist: '~200m from Greenbelt' },
     { name: "I'M Hotel", lat: 14.5646725, lng: 121.0295904, dist: '~1.6km from Greenbelt (not walkable)' },
-    { name: 'Prince Plaza II Condotel', lat: 14.5542583, lng: 121.0224923, dist: '~200m from Greenbelt \u2014 flagged for maintenance/cleanliness issues' }
+    { name: 'Prince Plaza II Condotel', lat: 14.5542583, lng: 121.0224923, dist: '~200m from Greenbelt \u2014 flagged for maintenance/cleanliness issues' },
+    { name: 'Citadines Benavidez Makati', lat: 14.5518824, lng: 121.0172534, dist: '~530m from Greenbelt (~8 min walk)' }
   ];
 
   hotels.forEach(h => {
