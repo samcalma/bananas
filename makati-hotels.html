@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotels near Makati CBD / Greenbelt Mall Area</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root{
+    --ink:#12312B;        /* deep Ayala-Ave teal */
+    --ink-soft:#2A4B44;
+    --gold:#C8A24A;        /* brass signage gold */
+    --gold-soft:#E4CE93;
+    --cream:#F4EFE2;       /* lobby marble */
+    --rust:#A6522E;        /* jeepney rust accent */
+    --line: rgba(18,49,43,0.14);
+    --shadow: 0 18px 40px -22px rgba(18,49,43,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    background:var(--ink);
+    color:var(--cream);
+    padding:64px 24px 56px;
+    overflow:hidden;
+  }
+  .hero-inner{
+    max-width:1040px;
+    margin:0 auto;
+    position:relative;
+    z-index:2;
+  }
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;height:1px;background:var(--gold);
+    display:inline-block;
+  }
+  .hero h1{
+    font-size:clamp(34px,5.4vw,58px);
+    line-height:1.04;
+    margin:0 0 16px;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--gold-soft);
+  }
+  .hero p.sub{
+    max-width:560px;
+    font-size:16px;
+    line-height:1.6;
+    color:#D9DED2;
+    margin:0;
+  }
+  .skyline{
+    position:absolute;
+    right:-40px; bottom:-6px;
+    width:56%; max-width:620px;
+    opacity:0.5;
+    z-index:1;
+  }
+
+  /* ---------- Filter bar ---------- */
+  .filterbar{
+    max-width:1040px;
+    margin:-26px auto 0;
+    position:relative;
+    z-index:3;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:14px 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .filterbar span.label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    margin-right:4px;
+  }
+  .chip{
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    padding:8px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .chip:hover{ border-color:var(--gold); }
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--cream);
+  }
+  .chip:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+
+  /* ---------- Grid ---------- */
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:40px 24px 80px;
+  }
+  .count{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    gap:20px;
+  }
+  .single-wrap{
+    display:grid;
+    grid-template-columns:minmax(280px,340px) 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:640px){
+    .single-wrap{ grid-template-columns:1fr; }
+  }
+  .card.feature{
+    height:100%;
+  }
+  .map-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .map-caption{
+    margin:0;
+    padding:12px 16px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 22px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .card h3{
+    font-size:19px;
+    margin:0;
+    line-height:1.25;
+  }
+  .tier{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .tier.luxury{ background:rgba(200,162,74,0.18); color:#8A6A1F; }
+  .tier.business{ background:rgba(18,49,43,0.10); color:var(--ink); }
+  .tier.boutique{ background:rgba(166,82,46,0.14); color:var(--rust); }
+  .area{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:-4px 0 0;
+  }
+  .blurb{
+    font-size:13.8px;
+    line-height:1.55;
+    color:#3C4B45;
+    margin:0;
+    flex-grow:1;
+  }
+  .card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:6px;
+    padding-top:12px;
+    border-top:1px dashed var(--line);
+    font-size:12.5px;
+  }
+  .price{
+    font-weight:700;
+    color:var(--ink);
+  }
+  .price span{
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:11.5px;
+  }
+  .note-btn{
+    color:var(--rust);
+    font-weight:600;
+    text-decoration:none;
+  }
+
+  .card.flagged{
+    border-color: rgba(166,82,46,0.4);
+    background: linear-gradient(180deg, rgba(166,82,46,0.05), #fff 60px);
+  }
+    margin:8px 0 0;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--ink-soft);
+  }
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 24px 60px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  .area-map{ margin-top:28px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .card{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Makati CBD · Metro Manila</p>
+    <h1>Hotels near Makati<br>CBD / <em>Greenbelt</em></h1>
+    <p class="sub">Shortlist anchored on Greenbelt Mall — walking distance noted for each. Hotel Céleste is one option among several.</p>
+  </div>
+  <svg class="skyline" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#F4EFE2">
+      <rect x="10" y="140" width="34" height="120"/>
+      <rect x="50" y="90" width="28" height="170"/>
+      <rect x="84" y="150" width="30" height="110"/>
+      <rect x="120" y="60" width="26" height="200"/>
+      <rect x="152" y="110" width="34" height="150"/>
+      <rect x="192" y="40" width="24" height="220"/>
+      <rect x="222" y="130" width="30" height="130"/>
+      <rect x="258" y="75" width="28" height="185"/>
+      <rect x="292" y="150" width="26" height="110"/>
+      <rect x="324" y="95" width="30" height="165"/>
+      <rect x="360" y="55" width="24" height="205"/>
+      <rect x="390" y="125" width="30" height="135"/>
+      <rect x="426" y="100" width="26" height="160"/>
+      <rect x="458" y="145" width="28" height="115"/>
+    </g>
+  </svg>
+</section>
+
+<main>
+  <p class="count" id="count">5 hotels</p>
+  <div class="grid" id="grid">
+
+    <article class="card" data-tier="boutique">
+      <div class="card-top">
+        <h3>Hotel Céleste</h3>
+        <span class="tier boutique">Boutique</span>
+      </div>
+      <p class="area">02 San Lorenzo Dr cnr A. Arnaiz Ave · ~330m from Greenbelt</p>
+      <p class="blurb">European-style boutique, 30 rooms. Rooftop terrace, marble bathrooms, in-house Italian restaurant (Lucia Ristorante). No pool — the trade-off for the size and character.</p>
+      <div class="card-foot">
+        <span class="price">~$76 <span>/ night, est.</span></span>
+        <a class="note-btn" href="http://www.hotelceleste.ph/" target="_blank" rel="noopener">website ↗</a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · October is historically one of the cheapest months for this hotel · ~$228 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
+    <article class="card" data-tier="luxury">
+      <div class="card-top">
+        <h3>Makati Diamond Residences</h3>
+        <span class="tier luxury">Luxury</span>
+      </div>
+      <p class="area">118 Legazpi St, Legazpi Village · ~150m from Greenbelt</p>
+      <p class="blurb">5-star, all-suite, directly across from Greenbelt 1 &amp; 5. Kitchenettes with full-size appliances, 25-yard indoor lap pool, Club Lounge. Priced noticeably below other Makati 5-stars for the location.</p>
+      <div class="card-foot">
+        <span class="price">~$106 <span>/ night, est.</span></span>
+        <a class="note-btn" href="https://www.booking.com/hotel/ph/makati-diamond-residences.html" target="_blank" rel="noopener">website ↗</a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$106, range roughly $89–$180 depending on room/dates · ~$318 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
+    <article class="card" data-tier="business">
+      <div class="card-top">
+        <h3>The Charter House</h3>
+        <span class="tier business">Business</span>
+      </div>
+      <p class="area">114 Legazpi St, Legazpi Village · ~200m from Greenbelt</p>
+      <p class="blurb">Low-rise, older 2/3-star property right across from Greenbelt 5. Rooftop pool, on-site restaurant. Reviews are mixed on room freshness — value-priced for the location rather than polished.</p>
+      <div class="card-foot">
+        <span class="price">~$43 <span>/ night, est.</span></span>
+        <a class="note-btn" href="https://www.booking.com/hotel/ph/the-charter-house.html" target="_blank" rel="noopener">website ↗</a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$43, range roughly $33–$50 depending on room/dates · ~$129 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
+    <article class="card" data-tier="luxury">
+      <div class="card-top">
+        <h3>I'M Hotel</h3>
+        <span class="tier luxury">Luxury</span>
+      </div>
+      <p class="area">7862 Makati Ave, Poblacion · ~1.6km from Greenbelt (not walkable — 3–5 min drive)</p>
+      <p class="blurb">5-star, first of its kind in Poblacion. Japanese-style onsen spa, jellyfish-tank rooftop bar, acrylic-bottomed pool. Strong on amenities and nightlife access, but the only hotel on this list outside comfortable walking distance of Greenbelt.</p>
+      <div class="card-foot">
+        <span class="price">~$80 <span>/ night, est.</span></span>
+        <a class="note-btn" href="https://imhotel.com/" target="_blank" rel="noopener">website ↗</a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate roughly $73–$90 depending on source/dates · ~$240 total before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
+    <article class="card flagged" data-tier="business">
+      <div class="card-top">
+        <h3>Prince Plaza II Condotel</h3>
+        <span class="tier business">Business</span>
+      </div>
+      <p class="area">101 Dela Rosa St, Legazpi Village · ~200m from Greenbelt</p>
+      <p class="blurb">Cheapest on this list and well-located, but 3.7★ isn't noise — recurring reports of broken/manually-operated elevators (shut off 11pm–4am at one point), cleanliness complaints (bugs, stained sheets, mould smell), and a cash/card-only ₱2,000 deposit collected at check-in. Rooms themselves get decent marks when they work.</p>
+      <div class="card-foot">
+        <span class="price">~$29 <span>/ night, est.</span></span>
+        <a class="note-btn" href="https://www.booking.com/hotel/ph/prince-plaza-ii-condotel.html" target="_blank" rel="noopener">website ↗</a>
+      </div>
+      <p class="price-note">Oct 29 – Nov 1 (3 nights) · average nightly rate ~$29–35, range roughly $28–$96 by room type · ~$90–105 total (base room) before taxes &amp; fees · estimate only, no live rate available — check the site for the exact quote.</p>
+    </article>
+
+  </div>
+
+  <div class="map-card area-map">
+    <div id="area-leaflet-map" style="width:100%; height:380px;"></div>
+    <p class="map-caption">Centered on Greenbelt Mall — pins mark each listed hotel with its walking distance.</p>
+  </div>
+</main>
+
+<footer>
+  Pulled from hotel sites, Tripadvisor, Expedia, and Kayak listings, Aug 2026 — prices and availability shift, so verify before booking. Distances are approximate walking distance to Greenbelt Mall.
+</footer>
+
+<script>
+  const map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5535828, 121.0218631], 16);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(map);
+
+  const goldIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:16px;height:16px;border-radius:50%;background:#C8A24A;border:2px solid #12312B;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+  });
+  const rustIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:#A6522E;border:2px solid #F4EFE2;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
+
+  L.marker([14.5535828, 121.0218631], { icon: goldIcon })
+    .addTo(map)
+    .bindPopup('<strong>Greenbelt Mall</strong><br>Anchor point');
+
+  const hotels = [
+    { name: 'Hotel Céleste', lat: 14.550428, lng: 121.0220885, dist: '~330m from Greenbelt' },
+    { name: 'Makati Diamond Residences', lat: 14.5538235, lng: 121.0208774, dist: '~150m from Greenbelt' },
+    { name: 'The Charter House', lat: 14.5537815, lng: 121.0213030, dist: '~200m from Greenbelt' },
+    { name: "I'M Hotel", lat: 14.5646725, lng: 121.0295904, dist: '~1.6km from Greenbelt (not walkable)' },
+    { name: 'Prince Plaza II Condotel', lat: 14.5542583, lng: 121.0224923, dist: '~200m from Greenbelt \u2014 flagged for maintenance/cleanliness issues' }
+  ];
+
+  hotels.forEach(h => {
+    L.marker([h.lat, h.lng], { icon: rustIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + h.name + '</strong><br>' + h.dist);
+  });
+
+  const allPoints = [[14.5535828, 121.0218631], ...hotels.map(h => [h.lat, h.lng])];
+  map.fitBounds(allPoints, { padding: [20, 20], maxZoom: 15 });
+</script>
+
+</body>
+</html>
