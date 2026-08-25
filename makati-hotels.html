@@ -145,6 +145,7 @@
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
     gap:20px;
+    margin-bottom:40px;
   }
   .single-wrap{
     display:grid;
@@ -263,7 +264,29 @@
     color:var(--ink-soft);
   }
 
-  .area-map{ margin-top:28px; }
+  .area-map{ margin-top:56px; }
+
+  .map-label{
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(18,49,43,0.25);
+  }
+  .map-label::before{
+    border-top-color: var(--ink) !important;
+  }
+  .map-label-anchor{
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .map-label-anchor::before{
+    border-top-color: var(--gold) !important;
+  }
 
   @media (prefers-reduced-motion: reduce){
     .card{ transition:none; }
@@ -408,7 +431,8 @@
 
   L.marker([14.5535828, 121.0218631], { icon: goldIcon })
     .addTo(map)
-    .bindPopup('<strong>Greenbelt Mall</strong><br>Anchor point');
+    .bindPopup('<strong>Greenbelt Mall</strong><br>Anchor point')
+    .bindTooltip('Greenbelt', { permanent: true, direction: 'top', offset: [0, -6], className: 'map-label map-label-anchor' });
 
   const hotels = [
     { name: 'Hotel Céleste', lat: 14.550428, lng: 121.0220885, dist: '~330m from Greenbelt' },
@@ -421,11 +445,12 @@
   hotels.forEach(h => {
     L.marker([h.lat, h.lng], { icon: rustIcon })
       .addTo(map)
-      .bindPopup('<strong>' + h.name + '</strong><br>' + h.dist);
+      .bindPopup('<strong>' + h.name + '</strong><br>' + h.dist)
+      .bindTooltip(h.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
   });
 
   const allPoints = [[14.5535828, 121.0218631], ...hotels.map(h => [h.lat, h.lng])];
-  map.fitBounds(allPoints, { padding: [20, 20], maxZoom: 15 });
+  map.fitBounds(allPoints, { padding: [40, 60], maxZoom: 15 });
 </script>
 
 </body>
