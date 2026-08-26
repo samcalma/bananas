@@ -866,20 +866,38 @@
   const tabs = document.querySelectorAll('.tab');
   const panels = document.querySelectorAll('.panel');
 
+  function activateTab(name, updateHash) {
+    const tab = document.querySelector('.tab[data-tab="' + name + '"]');
+    if (!tab) return;
+
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+
+    const target = 'panel-' + name;
+    panels.forEach(p => p.classList.toggle('active', p.id === target));
+
+    if (updateHash) {
+      history.replaceState(null, '', '#' + name);
+    }
+
+    if (name === 'hotels' && window.map) {
+      setTimeout(() => window.map.invalidateSize(), 50);
+    }
+  }
+
   tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-
-      const target = 'panel-' + tab.dataset.tab;
-      panels.forEach(p => p.classList.toggle('active', p.id === target));
-
-      if (tab.dataset.tab === 'hotels' && window.map) {
-        setTimeout(() => window.map.invalidateSize(), 50);
-      }
-    });
+    tab.addEventListener('click', () => activateTab(tab.dataset.tab, true));
   });
+
+  window.addEventListener('hashchange', () => {
+    const name = location.hash.replace('#', '');
+    if (name) activateTab(name, false);
+  });
+
+  // On load, honor an existing #hash (e.g. linking directly to #restaurants)
+  const initial = location.hash.replace('#', '');
+  if (initial) activateTab(initial, false);
 </script>
 
 <script>
