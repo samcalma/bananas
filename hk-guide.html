@@ -86,7 +86,6 @@
   }
   .tab:hover { color: var(--ink); }
   .tab[aria-selected="true"] { color: var(--jade); border-bottom-color: var(--jade); }
-  .tab .num { color: var(--gold); margin-right: .35em; }
 
   main { padding-top: 1.8rem; }
   .panel { display: none; animation: fade .25s ease; }
@@ -211,6 +210,122 @@
   }
   .leaflet-marker-label.pick::after { border-top-color: var(--jade); }
 
+  /* Subsection divider within a panel */
+  .subsection {
+    font-size: 1.25rem;
+    letter-spacing: -.01em;
+    margin: 2.4rem 0 .4rem;
+    padding-top: 1.6rem;
+    border-top: 2px solid var(--jade);
+  }
+  .subsection-sub { color: var(--muted); font-size: .92rem; margin-bottom: 1.2rem; }
+
+  /* Food */
+  .food-cat {
+    font-size: 1.15rem;
+    letter-spacing: -.01em;
+    margin: 1.6rem 0 .8rem;
+    padding-bottom: .35rem;
+    border-bottom: 2px solid var(--gold);
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .food-cat:first-of-type { margin-top: .2rem; }
+  .cjk-sm { font-weight: 400; opacity: .45; font-size: .85rem; }
+  .food-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: .9rem 1.05rem;
+    margin-bottom: .7rem;
+    box-shadow: var(--shadow);
+  }
+  .food-card.pick { border-left: 3px solid var(--jade); }
+  .food-top { display: flex; justify-content: space-between; align-items: flex-start; gap: .8rem; }
+  .food-card h4 { font-size: 1.08rem; letter-spacing: -.01em; }
+  .food-card .tag { font-size: .78rem; color: var(--muted); font-style: italic; margin-top: .05rem; }
+  .food-card .score {
+    flex: 0 0 auto;
+    font-family: ui-monospace, monospace;
+    font-size: 1rem; font-weight: 700; color: var(--jade-deep);
+  }
+  .food-card .score span { color: var(--gold); font-size: .8rem; margin-left: .1rem; }
+  .food-right { display: flex; flex-direction: column; align-items: flex-end; gap: .4rem; flex: 0 0 auto; }
+  .map-link {
+    display: inline-flex; align-items: center; gap: .28rem;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .64rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--jade); text-decoration: none;
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: .2rem .45rem;
+    transition: background .15s, border-color .15s;
+  }
+  .map-link:hover { background: rgba(31,111,92,.08); border-color: var(--jade); }
+  .map-link svg { width: 11px; height: 11px; display: block; }
+  .ig-link {
+    display: inline-flex; align-items: center; gap: .28rem;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .64rem; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--clay); text-decoration: none;
+    border: 1px solid var(--line); border-radius: 6px;
+    padding: .2rem .45rem;
+    transition: background .15s, border-color .15s;
+  }
+  .ig-link:hover { background: rgba(200,90,58,.08); border-color: var(--clay); }
+  .ig-link svg { width: 11px; height: 11px; display: block; }
+  .food-note { font-size: .9rem; color: #333; margin-top: .5rem; line-height: 1.5; }
+
+  /* Zone strip — schematic "how far from base" per category */
+  .zones {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: .85rem 1rem 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+  .zones-legend {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .64rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: .7rem;
+  }
+  .zone-track {
+    display: flex; align-items: stretch; gap: 0;
+    position: relative;
+  }
+  .zone {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0 .5rem;
+    border-left: 1px dashed var(--line);
+    text-align: center;
+  }
+  .zone:first-child { border-left: none; }
+  .zone.base { background: linear-gradient(180deg, rgba(31,111,92,.08), transparent); border-radius: 6px; }
+  .zone-name {
+    font-family: ui-monospace, monospace;
+    font-size: .72rem; font-weight: 600; letter-spacing: .02em;
+    color: var(--jade-deep);
+    line-height: 1.15;
+  }
+  .zone.base .zone-name { color: var(--jade); }
+  .zone-dist {
+    font-size: .62rem; color: var(--muted); font-style: italic;
+    margin-top: .1rem; margin-bottom: .5rem;
+    display: block;
+  }
+  .zone-spot {
+    font-size: .74rem; color: #333;
+    padding: .22rem 0; line-height: 1.25;
+    border-top: 1px dotted var(--line);
+  }
+  .zone-spot:first-of-type { border-top: 1px solid var(--line); padding-top: .4rem; }
+  .zone-empty { font-size: .9rem; color: var(--line); padding: .3rem 0; }
+  @media (max-width: 520px) {
+    .zone { padding: 0 .28rem; }
+    .zone-name { font-size: .64rem; }
+    .zone-spot { font-size: .68rem; }
+  }
+
   /* Placeholder panels */
   .todo { text-align: center; color: var(--muted); padding: 3rem 1rem; }
   .todo .mark { font-size: 2rem; color: var(--line); font-family: ui-monospace, monospace; }
@@ -234,11 +349,11 @@
 </header>
 
 <nav class="tabs" role="tablist" aria-label="Guide sections">
-  <button class="tab" role="tab" aria-selected="true" aria-controls="hotels" id="tab-hotels"><span class="num">01</span>Hotels</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="itinerary" id="tab-itinerary"><span class="num">02</span>Itinerary</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="food" id="tab-food"><span class="num">03</span>Food</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="hikes" id="tab-hikes"><span class="num">04</span>Hikes</button>
-  <button class="tab" role="tab" aria-selected="false" aria-controls="daytrips" id="tab-daytrips"><span class="num">05</span>Activities</button>
+  <button class="tab" role="tab" aria-selected="true" aria-controls="hotels" id="tab-hotels">Hotels</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="itinerary" id="tab-itinerary">Itinerary</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="activities" id="tab-activities">Activities</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="food" id="tab-food">Food</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="coffee" id="tab-coffee">Coffee</button>
 </nav>
 
 <main class="wrap">
@@ -281,7 +396,7 @@
         <span class="chip warn">Older / dated feel</span>
       </div>
       <ul class="notes">
-        <li>8 min walk to Star Ferry, 10 min to TST MTR — central to the itinerary</li>
+        <li>8 min walk to Star Ferry, 10 min to Tsim Sha Tsui MTR — central to the itinerary</li>
         <li>Runs below the HK 5-star average rate; strong value for the space</li>
         <li>Breakfast is <strong>$33 / person / day</strong> — not in the total above</li>
       </ul>
@@ -332,66 +447,174 @@
 
   <!-- Placeholder panels -->
   <section class="panel" id="itinerary" role="tabpanel" aria-labelledby="tab-itinerary">
-    <div class="panel-head"><h2>Itinerary</h2><p>Day-by-day plan for the four nights.</p></div>
-    <div class="todo"><div class="mark">02</div><p>Not built yet — say the word and I'll fill this in.</p></div>
+    <div class="panel-head">
+      <h2>Itinerary</h2>
+      <p>Flights locked; day-by-day plan to follow.</p>
+    </div>
+
+    <div class="cost" style="margin-top:0;">
+      <h3>Flights · Cebu Pacific</h3>
+      <div class="cap">Manila ↔ Hong Kong · round trip</div>
+      <table>
+        <thead>
+          <tr><th>Route</th><th>Date</th><th style="text-align:right">Depart</th><th style="text-align:right">Arrive</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>MNL → HKG</strong></td>
+            <td>Tue, Jan 12</td>
+            <td class="n">10:30 AM</td>
+            <td class="n">1:00 PM</td>
+          </tr>
+          <tr>
+            <td><strong>HKG → MNL</strong></td>
+            <td>Sat, Jan 16</td>
+            <td class="n">2:00 PM</td>
+            <td class="n">4:25 PM</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="fine">Outbound lands 1:00 PM — a half-day arrival, good for check-in and an easy first evening. Return lands Manila 4:25 PM Jan 16; the Osaka leg can't depart the same day, so plan a Manila overnight before flying to KIX.</p>
+    </div>
+
+    <div class="todo"><div class="mark">02</div><p>Day-by-day plan not built yet — say the word and I'll fill it in.</p></div>
   </section>
   <section class="panel" id="food" role="tabpanel" aria-labelledby="tab-food">
-    <div class="panel-head"><h2>Food</h2><p>Dim sum, markets, and group-friendly dinners.</p></div>
-    <div class="todo"><div class="mark">03</div><p>Not built yet.</p></div>
-  </section>
-  <section class="panel" id="hikes" role="tabpanel" aria-labelledby="tab-hikes">
     <div class="panel-head">
-      <h2>Hikes</h2>
-      <p>Hong Kong hides real trails between the towers. Dragon's Back is the one to do.</p>
+      <h2>Food</h2>
+      <p>Three dishes to prioritise, with where to eat each. Ratings and notes from recent reviews.</p>
     </div>
 
-    <div class="hotel pick">
-      <span class="pick-flag">Do this one</span>
-      <div class="hotel-top">
-        <div>
-          <h3>Dragon's Back <span style="font-weight:400;opacity:.5;font-size:.8em;">龍脊</span></h3>
-          <div class="tag">Shek O Country Park · Hong Kong Trail, Section 8</div>
-        </div>
-        <div class="price-block">
-          <div class="amt">8.5<span style="font-size:1rem;">km</span></div>
-          <div class="unit">2–5 hrs</div>
+    <h3 class="food-cat">Dim sum <span class="cjk-sm">點心</span></h3>
+    <div class="zones">
+      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zone-track">
+        <div class="zone base">
+          <div class="zone-name">Tsim Sha Tsui</div>
+          <span class="zone-dist">your base</span>
+          <div class="zone-spot">One Dim Sum</div>
+          <div class="zone-spot">Lung Dim Sum</div>
+          <div class="zone-spot">Log Ye</div>
         </div>
       </div>
-      <div class="meta">
-        <span class="chip good">Beginner–moderate</span>
-        <span class="chip good">MTR accessible</span>
-        <span class="chip good">Ends at a beach</span>
-        <span class="chip">Ridge / ocean views</span>
-        <span class="chip warn">No shops on trail</span>
+    </div>
+    <div class="food-card pick">
+      <div class="food-top">
+        <div><h4>One Dim Sum</h4><div class="tag">Tsim Sha Tsui · cheap &amp; fast</div></div>
+        <div class="food-right"><div class="score">4.4<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=17024044638009671088" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
       </div>
-      <ul class="notes">
-        <li>Undulating ridgeline that resembles a dragon's spine — panoramic views of Shek O, Big Wave Bay, and the South China Sea</li>
-        <li>Only a ~30 min uphill walk from the MTR to the trailhead — no car needed from TST</li>
-        <li>Finishes at <strong>Big Wave Bay</strong> beach, where there are cafés and food — good payoff to end on</li>
-        <li>Well-signposted throughout; sturdy trainers or boots recommended for the steeper parts</li>
-      </ul>
+      <p class="food-note">The group sweet spot — spacious Tsim Sha Tsui branch, quick service, famous for steamed rice rolls with prawn. Pre-order while you queue. Open till midnight.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Lung Dim Sum</h4><div class="tag">Tsim Sha Tsui · group-tested</div></div>
+        <div class="food-right"><div class="score">4.3<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=1543413004029883481" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Handled a party of seven well (gave up their VIP room, per a reviewer). Big variety, complimentary dessert, opens 7 AM. Best bet if you want one sit-down table for everyone.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Log Ye Dim Sum</h4><div class="tag">Tsim Sha Tsui · modern take</div></div>
+        <div class="food-right"><div class="score">4.1<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=11079108866297056273" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">A contemporary spin on the classics, served piping hot; standout shrimp rice roll. Line moves fast — grab a number before waiting.</p>
     </div>
 
-    <div class="cost">
-      <h3>Before you go</h3>
-      <div class="cap">Practical notes for a group morning out</div>
-      <ul class="notes" style="margin-top:.2rem;">
-        <li><strong>Timing:</strong> start before 9 AM or avoid weekends — it's popular and gets crowded on the ridge</li>
-        <li><strong>Bring:</strong> water and snacks — there's nothing on the trail itself until Big Wave Bay</li>
-        <li><strong>Weather:</strong> mid-Jan is cool and dry (14–19°C) — ideal hiking conditions, pack a light layer for the exposed ridge</li>
-        <li><strong>Getting there:</strong> MTR to Shau Kei Wan, then bus/taxi to To Tei Wan trailhead</li>
-      </ul>
-      <p class="fine">Fits naturally as a swap for — or add-on to — the Peak/Central or Lantau day, depending on the group's appetite for a real walk.</p>
+    <h3 class="food-cat">Roast meats <span class="cjk-sm">燒味</span></h3>
+    <div class="zones">
+      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zone-track">
+        <div class="zone base">
+          <div class="zone-name">Tsim Sha Tsui</div>
+          <span class="zone-dist">your base</span>
+          <div class="zone-spot">Yung Kee</div>
+        </div>
+        <div class="zone">
+          <div class="zone-name">Wan Chai</div>
+          <span class="zone-dist">harbour crossing</span>
+          <div class="zone-spot">Kam's Roast Goose</div>
+        </div>
+        <div class="zone">
+          <div class="zone-name">Causeway Bay</div>
+          <span class="zone-dist">harbour crossing</span>
+          <div class="zone-spot">Kitchen One</div>
+        </div>
+      </div>
+    </div>
+    <div class="food-card pick">
+      <div class="food-top">
+        <div><h4>Kam's Roast Goose</h4><div class="tag">Wan Chai · Michelin-starred</div></div>
+        <div class="food-right"><div class="score">4.1<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=10755535674325808389" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">The famous name — juicy roast goose, fatty char siu, Michelin-starred for over a decade. Expect a queue; takeaway is much faster if the wait's long.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Kitchen One Roast Goose</h4><div class="tag">Causeway Bay · insider pick</div></div>
+        <div class="food-right"><div class="score">4.3<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=14018823565700873511" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Chef trained at a Michelin spot in Macau — comparable quality, noticeably shorter waits. Great char siu and goose-over-rice combos at good value.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Yung Kee (Tsim Sha Tsui)</h4><div class="tag">Tsim Sha Tsui · convenient</div></div>
+        <div class="food-right"><div class="score">3.7<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=12915299350652804886" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Walking distance from the hotels — upper-tier char siu and crispy suckling piglet. Cramped and shared tables, but the meat delivers. The easy option when you don't want to cross the harbour.</p>
     </div>
 
-    <div style="margin-top:1.6rem;">
-      <p style="font-size:.9rem;color:var(--muted);font-style:italic;">Other trails if the group wants variety: Victoria Peak / HK Trail Section 1 (flat, easy, pairs with the Peak Tram day), Lantau Peak or Sunset Peak (tougher climbs, sunrise/sunset views), MacLehose Section 2 (13.5 km coastal, bigger day, further from TST).</p>
+    <h3 class="food-cat">Wonton noodles <span class="cjk-sm">雲吞麵</span></h3>
+    <div class="zones">
+      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zone-track">
+        <div class="zone base">
+          <div class="zone-name">Tsim Sha Tsui</div>
+          <span class="zone-dist">your base</span>
+          <div class="zone-spot">Shek Kee</div>
+        </div>
+        <div class="zone">
+          <div class="zone-name">Jordan</div>
+          <span class="zone-dist">1 MTR stop</span>
+          <div class="zone-spot">Mak Man Kee</div>
+        </div>
+        <div class="zone">
+          <div class="zone-name">Central</div>
+          <span class="zone-dist">harbour crossing</span>
+          <div class="zone-spot">Tsim Chai Kee</div>
+        </div>
+      </div>
+    </div>
+    <div class="food-card pick">
+      <div class="food-top">
+        <div><h4>Shek Kee Wonton Noodles</h4><div class="tag">Tsim Sha Tsui · closest &amp; top-rated</div></div>
+        <div class="food-right"><div class="score">4.5<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=12113879434291927621" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Wontons wrapped fresh daily, springy egg noodles, killer homemade chili oil. Cheap and down-to-earth. Note: <strong>closed Sundays</strong>.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Mak Man Kee</h4><div class="tag">Jordan · Michelin-listed</div></div>
+        <div class="food-right"><div class="score">4.1<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=223003035127073132" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">A classic — plump fresh-shrimp wontons in clear savoury broth, also known for braised pork knuckle. Great value, open late.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>Tsim Chai Kee</h4><div class="tag">Central · pair with the Peak day</div></div>
+        <div class="food-right"><div class="score">4.0<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=8380974872586493257" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Central institution with huge shrimp-packed wontons and shared tables. Right by Victoria Peak's base — slot it into the Central/Peak day.</p>
+    </div>
+
+    <div class="cost" style="margin-top:1.6rem;">
+      <h3>Group note</h3>
+      <p class="fine" style="font-style:normal;color:#333;">Most of these are small, no-frills shops with shared tables and queues. The dim sum halls (One Dim Sum, Lung) seat a party of 7 most comfortably — the wonton and roast-meat spots are better split into smaller groups or timed off-peak.</p>
     </div>
   </section>
-  <section class="panel" id="daytrips" role="tabpanel" aria-labelledby="tab-daytrips">
+  <section class="panel" id="activities" role="tabpanel" aria-labelledby="tab-activities">
     <div class="panel-head">
       <h2>Activities</h2>
-      <p>Big-ticket days out. Disney is the anchor; Macau and Lantau round it out.</p>
+      <p>Big-ticket days out and trails. Disney is the anchor; hikes at the end.</p>
     </div>
 
     <div class="hotel">
@@ -439,7 +662,7 @@
         <span class="chip warn">Bring passports</span>
       </div>
       <ul class="notes">
-        <li>Easy day trip via TurboJET / Cotai Water Jet — but note the China Ferry Terminal (near the TST hotels) reportedly no longer runs the Macau route, so check departure point (Sheung Wan / Kowloon)</li>
+        <li>Easy day trip via TurboJET / Cotai Water Jet — but note the China Ferry Terminal (near the Tsim Sha Tsui hotels) reportedly no longer runs the Macau route, so check departure point (Sheung Wan / Kowloon)</li>
         <li>It's a separate immigration crossing — everyone needs their passport</li>
       </ul>
     </div>
@@ -466,44 +689,188 @@
         <li>Go at opening if it lands on a weekend — cable car lines get long</li>
       </ul>
     </div>
+
+    <h3 class="subsection">Hikes 🥾</h3>
+    <p class="subsection-sub">Hong Kong hides real trails between the towers. Dragon's Back is the one to do.</p>
+
+    <div class="hotel pick">
+      <span class="pick-flag">Do this one</span>
+      <div class="hotel-top">
+        <div>
+          <h3>Dragon's Back <span style="font-weight:400;opacity:.5;font-size:.8em;">龍脊</span></h3>
+          <div class="tag">Shek O Country Park · Hong Kong Trail, Section 8</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">8.5<span style="font-size:1rem;">km</span></div>
+          <div class="unit">2–5 hrs</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Beginner–moderate</span>
+        <span class="chip good">MTR accessible</span>
+        <span class="chip good">Ends at a beach</span>
+        <span class="chip">Ridge / ocean views</span>
+        <span class="chip warn">No shops on trail</span>
+      </div>
+      <ul class="notes">
+        <li>Undulating ridgeline that resembles a dragon's spine — panoramic views of Shek O, Big Wave Bay, and the South China Sea</li>
+        <li>Only a ~30 min uphill walk from the MTR to the trailhead — no car needed from Tsim Sha Tsui</li>
+        <li>Finishes at <strong>Big Wave Bay</strong> beach, where there are cafés and food — good payoff to end on</li>
+        <li>Well-signposted throughout; sturdy trainers or boots recommended for the steeper parts</li>
+      </ul>
+    </div>
+
+    <div class="cost">
+      <h3>Before you go</h3>
+      <div class="cap">Practical notes for a group morning out</div>
+      <ul class="notes" style="margin-top:.2rem;">
+        <li><strong>Timing:</strong> start before 9 AM or avoid weekends — it's popular and gets crowded on the ridge</li>
+        <li><strong>Bring:</strong> water and snacks — there's nothing on the trail itself until Big Wave Bay</li>
+        <li><strong>Weather:</strong> mid-Jan is cool and dry (14–19°C) — ideal hiking conditions, pack a light layer for the exposed ridge</li>
+        <li><strong>Getting there:</strong> MTR to Shau Kei Wan, then bus/taxi to To Tei Wan trailhead</li>
+      </ul>
+      <p class="fine">Fits naturally as a swap for — or add-on to — the Peak/Central or Lantau day, depending on the group's appetite for a real walk.</p>
+    </div>
+
+    <div style="margin-top:1.6rem;">
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;">Other trails if the group wants variety: Victoria Peak / HK Trail Section 1 (flat, easy, pairs with the Peak Tram day), Lantau Peak or Sunset Peak (tougher climbs, sunrise/sunset views), MacLehose Section 2 (13.5 km coastal, bigger day, further from Tsim Sha Tsui).</p>
+    </div>
+  </section>
+
+  <section class="panel" id="coffee" role="tabpanel" aria-labelledby="tab-coffee">
+    <div class="panel-head">
+      <h2>Coffee <span class="cjk">咖啡</span></h2>
+      <p>Hong Kong's specialty scene is strong. One solid spot at base, the real cluster across the harbour.</p>
+    </div>
+
+    <h3 class="food-cat">Walkable from base <span class="cjk-sm">尖沙咀</span></h3>
+    <div class="zones">
+      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zone-track">
+        <div class="zone base">
+          <div class="zone-name">Tsim Sha Tsui</div>
+          <span class="zone-dist">your base</span>
+          <div class="zone-spot">Urban Coffee Roaster</div>
+        </div>
+      </div>
+    </div>
+    <div class="food-card pick">
+      <div class="food-top">
+        <div><h4>Urban Coffee Roaster</h4><div class="tag">Tsim Sha Tsui · self-roasting</div></div>
+        <div class="food-right"><div class="score">4.2<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=17367182797241297723" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a><a class="ig-link" href="https://www.instagram.com/urbancoffeeroaster/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>IG</a></div>
+      </div>
+      <p class="food-note">The one serious specialty spot right in Tsim Sha Tsui — self-roasted beans, industrial-loft space, a quirky 2-way cup concept. Try the house espresso. Can get a queue, so it's a grab-and-go more than a linger.</p>
+    </div>
+
+    <h3 class="food-cat">Worth the crossing <span class="cjk-sm">上環</span></h3>
+    <div class="zones">
+      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zone-track">
+        <div class="zone base">
+          <div class="zone-name">Tsim Sha Tsui</div>
+          <span class="zone-dist">your base</span>
+          <div class="zone-empty">—</div>
+        </div>
+        <div class="zone">
+          <div class="zone-name">Sheung Wan</div>
+          <span class="zone-dist">harbour crossing</span>
+          <div class="zone-spot">Anchor Coffee</div>
+          <div class="zone-spot">First Sip</div>
+          <div class="zone-spot">commaa</div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;">Sheung Wan is HK's specialty-coffee heartland — three excellent spots within a few blocks. Pairs naturally with a Central / Peak sightseeing day.</p>
+
+    <div class="food-card pick">
+      <div class="food-top">
+        <div><h4>Anchor Coffee</h4><div class="tag">Sheung Wan · takeaway window</div></div>
+        <div class="food-right"><div class="score">4.8<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=8133669171994766838" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a><a class="ig-link" href="https://www.instagram.com/anchorcoffeehk/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>IG</a></div>
+      </div>
+      <p class="food-note">Right at Sheung Wan MTR Exit B — takeaway only, but punches well above its price on craft. Standout americano, flat white, and cold brew. The easy first stop if you're crossing over.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>First Sip</h4><div class="tag">Sheung Wan · tram-side sit-down</div></div>
+        <div class="food-right"><div class="score">4.8<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=6173237969813523469" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a></div>
+      </div>
+      <p class="food-note">Balanced mocha, coconut latte, and good pastries, with a window view of trams rolling by. Small but a great spot to actually sit for a while.</p>
+    </div>
+    <div class="food-card">
+      <div class="food-top">
+        <div><h4>commaa</h4><div class="tag">Sheung Wan · coffee, art &amp; architecture</div></div>
+        <div class="food-right"><div class="score">4.5<span>★</span></div><a class="map-link" href="https://maps.google.com/?cid=11661787593061156589" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>Map</a><a class="ig-link" href="https://www.instagram.com/commaa.hk/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>IG</a></div>
+      </div>
+      <p class="food-note">A spacious cafe-meets-gallery — the pick if the group wants room to sit, work, or linger. Known as much for matcha and Basque cheesecake as for coffee; try the jasmine-tea cold brew.</p>
+    </div>
   </section>
 
   <footer>Hong Kong · January 2027 · working draft</footer>
 </main>
 
 <script>
-  // Map: centered on TST, both hotels plotted
-  const hotels = [
-    { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: true },
-    { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false }
-  ];
-  const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.2966, 114.1706], 15);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map);
-  hotels.forEach(h => {
-    L.marker([h.lat, h.lng]).addTo(map)
-      .bindTooltip(h.name, {
-        permanent: true,
-        direction: 'top',
-        offset: [-14, -8],
-        className: 'leaflet-marker-label' + (h.pick ? ' pick' : '')
+  // Map: centered on Tsim Sha Tsui, both hotels plotted.
+  // Guarded so a blocked CDN (no Leaflet) degrades gracefully instead of halting the page.
+  (function initMap() {
+    const el = document.getElementById('hotel-map');
+    if (!el) return;
+    if (typeof L === 'undefined') {
+      // Leaflet didn't load — show a fallback instead of throwing.
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.textAlign = 'center';
+      el.style.padding = '1.5rem';
+      el.style.color = 'var(--muted)';
+      el.style.fontStyle = 'italic';
+      el.innerHTML = 'Map needs an internet connection to load.<br>Marco Polo (3 Canton Rd) and Mondrian (8A Hart Ave) are ~500 m apart in Tsim Sha Tsui.';
+      return;
+    }
+    try {
+      const hotels = [
+        { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: true },
+        { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false }
+      ];
+      const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.2966, 114.1706], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(map);
+      hotels.forEach(h => {
+        L.marker([h.lat, h.lng]).addTo(map)
+          .bindTooltip(h.name, {
+            permanent: true,
+            direction: 'top',
+            offset: [-14, -8],
+            className: 'leaflet-marker-label' + (h.pick ? ' pick' : '')
+          });
       });
-  });
-  // Re-size the map when the Hotels tab becomes visible (guards against 0-height init)
-  const hotelsPanel = document.getElementById('hotels');
-  document.getElementById('tab-hotels').addEventListener('click', () => {
-    setTimeout(() => map.invalidateSize(), 60);
-  });
-  window.addEventListener('load', () => setTimeout(() => map.invalidateSize(), 100));
+      document.getElementById('tab-hotels').addEventListener('click', () => {
+        setTimeout(() => map.invalidateSize(), 60);
+      });
+      window.addEventListener('load', () => setTimeout(() => map.invalidateSize(), 100));
+    } catch (err) {
+      console.error('Map init failed:', err);
+    }
+  })();
 
   const tabs = Array.from(document.querySelectorAll('.tab'));
   const panels = Array.from(document.querySelectorAll('.panel'));
-  function select(tab) {
+  function select(tab, updateHash = true) {
+    if (!tab) return;
     tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
     const id = tab.getAttribute('aria-controls');
     panels.forEach(p => p.classList.toggle('active', p.id === id));
+    if (updateHash) {
+      // Update the URL hash without adding a scroll jump or a history entry per keystroke
+      history.replaceState(null, '', '#' + id);
+    }
+  }
+  // Activate a tab by its panel id (e.g. from the URL hash like #coffee)
+  function selectById(id, updateHash = true) {
+    const tab = tabs.find(t => t.getAttribute('aria-controls') === id);
+    if (tab) { select(tab, updateHash); return true; }
+    return false;
   }
   tabs.forEach((tab, i) => {
     tab.addEventListener('click', () => select(tab));
@@ -516,6 +883,14 @@
       }
     });
   });
+  // On load: if the URL has a hash matching a panel, open that tab
+  function applyHash(updateHash) {
+    const id = (location.hash || '').replace('#', '');
+    return id ? selectById(id, updateHash) : false;
+  }
+  applyHash(false);
+  // Respond to back/forward navigation and manual hash edits
+  window.addEventListener('hashchange', () => applyHash(false));
 </script>
 </body>
 </html>
