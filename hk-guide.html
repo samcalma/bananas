@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hong Kong Guide · Jan 2027</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ink: #14201f;
+    --paper: #f3efe6;
+    --card: #fbf9f4;
+    --jade: #1f6f5c;
+    --jade-deep: #134a3d;
+    --clay: #c85a3a;
+    --gold: #c99a3f;
+    --line: #ddd6c6;
+    --muted: #6a6a5f;
+    --shadow: 0 1px 2px rgba(20,32,31,.06), 0 6px 18px rgba(20,32,31,.06);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+    padding-bottom: 4rem;
+  }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 1.1rem; }
+
+  /* Header */
+  header {
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(31,111,92,.16), transparent 55%),
+      var(--jade-deep);
+    color: #f6f2e8;
+    padding: 2.4rem 0 2rem;
+    border-bottom: 3px solid var(--gold);
+  }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .72rem;
+    letter-spacing: .28em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: .6rem;
+  }
+  header h1 {
+    font-size: clamp(2.1rem, 7vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.02;
+    letter-spacing: -.01em;
+  }
+  header h1 .cjk { font-weight: 400; opacity: .55; font-size: .8em; margin-left: .3em; }
+  .sub {
+    margin-top: .7rem;
+    font-size: .98rem;
+    color: #cdd9d0;
+    font-style: italic;
+  }
+
+  /* Tabs */
+  .tabs {
+    position: sticky; top: 0; z-index: 20;
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    display: flex; gap: .2rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto;
+    background: none; border: none;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .78rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--muted);
+    padding: 1rem .9rem .8rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color .15s;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--jade); border-bottom-color: var(--jade); }
+  .tab .num { color: var(--gold); margin-right: .35em; }
+
+  main { padding-top: 1.8rem; }
+  .panel { display: none; animation: fade .25s ease; }
+  .panel.active { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+  .panel-head { margin-bottom: 1.3rem; }
+  .panel-head h2 { font-size: 1.5rem; letter-spacing: -.01em; }
+  .panel-head p { color: var(--muted); font-size: .95rem; margin-top: .2rem; }
+
+  /* Decision banner */
+  .verdict {
+    display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--jade);
+    border-radius: 10px;
+    padding: .9rem 1.1rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    font-size: .95rem;
+  }
+  .verdict strong { color: var(--jade-deep); }
+  .verdict .delta {
+    font-family: ui-monospace, monospace;
+    background: rgba(31,111,92,.1);
+    color: var(--jade-deep);
+    padding: .1rem .45rem; border-radius: 5px; font-size: .85rem;
+  }
+
+  /* Hotel cards */
+  .hotel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.2rem 1.2rem 1.1rem;
+    margin-bottom: 1.1rem;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+  .hotel.pick { border-color: var(--jade); }
+  .pick-flag {
+    position: absolute; top: -.7rem; left: 1.1rem;
+    background: var(--jade); color: #fff;
+    font-family: ui-monospace, monospace;
+    font-size: .64rem; letter-spacing: .16em; text-transform: uppercase;
+    padding: .25rem .6rem; border-radius: 20px;
+  }
+  .hotel-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+  .hotel h3 { font-size: 1.28rem; letter-spacing: -.01em; }
+  .hotel .tag { font-size: .8rem; color: var(--muted); font-style: italic; margin-top: .1rem; }
+  .price-block { text-align: right; flex: 0 0 auto; }
+  .price-block .amt { font-size: 1.5rem; font-weight: 700; color: var(--jade-deep); font-family: ui-monospace, monospace; letter-spacing: -.02em; }
+  .price-block .unit { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+
+  .meta { display: flex; flex-wrap: wrap; gap: .4rem; margin: .9rem 0; }
+  .chip {
+    font-size: .78rem; padding: .3rem .6rem; border-radius: 6px;
+    background: var(--paper); border: 1px solid var(--line); color: var(--ink);
+  }
+  .chip.good { border-color: rgba(31,111,92,.4); color: var(--jade-deep); }
+  .chip.warn { border-color: rgba(200,90,58,.4); color: var(--clay); }
+
+  .notes { list-style: none; font-size: .9rem; }
+  .notes li { padding: .28rem 0 .28rem 1.3rem; position: relative; color: #333; border-top: 1px dotted var(--line); }
+  .notes li:first-child { border-top: none; }
+  .notes li::before { content: "→"; position: absolute; left: 0; color: var(--gold); }
+
+  /* Cost table */
+  .cost {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 1.1rem 1.2rem; margin-top: 1.6rem;
+    box-shadow: var(--shadow);
+  }
+  .cost h3 { font-size: 1.05rem; margin-bottom: .2rem; }
+  .cost .cap { font-size: .82rem; color: var(--muted); margin-bottom: .9rem; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+  th, td { text-align: left; padding: .55rem .3rem; border-bottom: 1px solid var(--line); }
+  th { font-family: ui-monospace, monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 400; }
+  td.n { text-align: right; font-family: ui-monospace, monospace; letter-spacing: -.02em; }
+  tr.total td { border-bottom: none; border-top: 2px solid var(--ink); font-weight: 700; padding-top: .7rem; }
+  tr.total td.n { color: var(--jade-deep); }
+  .fine { font-size: .78rem; color: var(--muted); margin-top: .8rem; font-style: italic; }
+
+  /* Map */
+  .map-wrap {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+  }
+  #hotel-map { height: 320px; width: 100%; background: #dfe6e2; }
+  .map-cap {
+    background: var(--card);
+    padding: .6rem 1rem;
+    font-size: .82rem;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    font-style: italic;
+  }
+  .leaflet-marker-label {
+    background: var(--ink);
+    color: #f6f2e8;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: .72rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+    padding: .2rem .5rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+  }
+  .leaflet-marker-label.pick { background: var(--jade); }
+  .leaflet-marker-label::after {
+    content: "";
+    position: absolute;
+    bottom: -5px; left: 50%; transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--ink);
+  }
+  .leaflet-marker-label.pick::after { border-top-color: var(--jade); }
+
+  /* Placeholder panels */
+  .todo { text-align: center; color: var(--muted); padding: 3rem 1rem; }
+  .todo .mark { font-size: 2rem; color: var(--line); font-family: ui-monospace, monospace; }
+  .todo p { margin-top: .5rem; font-style: italic; }
+
+  footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 2.5rem; font-style: italic; }
+
+  @media (max-width: 520px) {
+    .hotel-top { flex-direction: column; }
+    .price-block { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>Hong Kong<span class="cjk">香港</span></h1>
+    <div class="sub">January 12–16, 2027 · four nights in Tsim Sha Tsui</div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Guide sections">
+  <button class="tab" role="tab" aria-selected="true" aria-controls="hotels" id="tab-hotels"><span class="num">01</span>Hotels</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="itinerary" id="tab-itinerary"><span class="num">02</span>Itinerary</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="food" id="tab-food"><span class="num">03</span>Food</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="hikes" id="tab-hikes"><span class="num">04</span>Hikes</button>
+  <button class="tab" role="tab" aria-selected="false" aria-controls="daytrips" id="tab-daytrips"><span class="num">05</span>Activities</button>
+</nav>
+
+<main class="wrap">
+
+  <!-- HOTELS -->
+  <section class="panel active" id="hotels" role="tabpanel" aria-labelledby="tab-hotels">
+    <div class="panel-head">
+      <h2>Where to stay</h2>
+      <p>Two 5-star options in Tsim Sha Tsui, priced for 3 rooms across 4 nights.</p>
+    </div>
+
+    <div class="verdict">
+      <span><strong>Marco Polo</strong> is the value pick —</span>
+      <span class="delta">$683 cheaper</span>
+      <span>even after matching breakfast, with larger rooms. Mondrian wins on newness &amp; design.</span>
+    </div>
+
+    <div class="map-wrap">
+      <div id="hotel-map"></div>
+      <div class="map-cap">Both hotels sit in Tsim Sha Tsui, Kowloon — walking distance to the Star Ferry and Harbour City.</div>
+    </div>
+
+    <div class="hotel pick">
+      <span class="pick-flag">Value pick</span>
+      <div class="hotel-top">
+        <div>
+          <h3>Marco Polo Hongkong</h3>
+          <div class="tag">3 Canton Road, Harbour City · classic 5-star</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">$3,014</div>
+          <div class="unit">3 rooms · room only</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Larger rooms</span>
+        <span class="chip good">665-room inventory</span>
+        <span class="chip good">Inside Harbour City mall</span>
+        <span class="chip">Outdoor heated pool</span>
+        <span class="chip warn">Older / dated feel</span>
+      </div>
+      <ul class="notes">
+        <li>8 min walk to Star Ferry, 10 min to TST MTR — central to the itinerary</li>
+        <li>Runs below the HK 5-star average rate; strong value for the space</li>
+        <li>Breakfast is <strong>$33 / person / day</strong> — not in the total above</li>
+      </ul>
+    </div>
+
+    <div class="hotel">
+      <div class="hotel-top">
+        <div>
+          <h3>Mondrian Hong Kong</h3>
+          <div class="tag">8A Hart Avenue · design-forward 5-star</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">$4,622</div>
+          <div class="unit">3 rooms · breakfast incl.</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Newest property</span>
+        <span class="chip good">265m to MTR</span>
+        <span class="chip good">40th-floor rooftop bar</span>
+        <span class="chip good">Breakfast included</span>
+        <span class="chip warn">Rooms flagged small (2/10)</span>
+        <span class="chip warn">Value 2/10</span>
+      </div>
+      <ul class="notes">
+        <li>Karin Krautgartner design, Carna steakhouse, Avoca rooftop bar</li>
+        <li>9.0/10 guest score, location scores 9.5 — but space is the trade-off</li>
+        <li>Reads as a couples/boutique stay more than a spread-out group base</li>
+      </ul>
+    </div>
+
+    <div class="cost">
+      <h3>Like-for-like cost</h3>
+      <div class="cap">Both with breakfast, 3 rooms · 4 nights · 7 people</div>
+      <table>
+        <thead>
+          <tr><th>Line</th><th style="text-align:right">Marco Polo</th><th style="text-align:right">Mondrian</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Rooms (4 nights)</td><td class="n">$3,014.29</td><td class="n">$4,621.63</td></tr>
+          <tr><td>Breakfast add-on</td><td class="n">+$924.00</td><td class="n">incl.</td></tr>
+          <tr class="total"><td>All-in</td><td class="n">$3,938.29</td><td class="n">$4,621.63</td></tr>
+        </tbody>
+      </table>
+      <p class="fine">Marco Polo stays ~$683 cheaper on a matched basis. Room-only, the gap is ~$1,607. Figures are quotes you pulled, not live-rechecked for Jan 2027.</p>
+    </div>
+  </section>
+
+  <!-- Placeholder panels -->
+  <section class="panel" id="itinerary" role="tabpanel" aria-labelledby="tab-itinerary">
+    <div class="panel-head"><h2>Itinerary</h2><p>Day-by-day plan for the four nights.</p></div>
+    <div class="todo"><div class="mark">02</div><p>Not built yet — say the word and I'll fill this in.</p></div>
+  </section>
+  <section class="panel" id="food" role="tabpanel" aria-labelledby="tab-food">
+    <div class="panel-head"><h2>Food</h2><p>Dim sum, markets, and group-friendly dinners.</p></div>
+    <div class="todo"><div class="mark">03</div><p>Not built yet.</p></div>
+  </section>
+  <section class="panel" id="hikes" role="tabpanel" aria-labelledby="tab-hikes">
+    <div class="panel-head">
+      <h2>Hikes</h2>
+      <p>Hong Kong hides real trails between the towers. Dragon's Back is the one to do.</p>
+    </div>
+
+    <div class="hotel pick">
+      <span class="pick-flag">Do this one</span>
+      <div class="hotel-top">
+        <div>
+          <h3>Dragon's Back <span style="font-weight:400;opacity:.5;font-size:.8em;">龍脊</span></h3>
+          <div class="tag">Shek O Country Park · Hong Kong Trail, Section 8</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">8.5<span style="font-size:1rem;">km</span></div>
+          <div class="unit">2–5 hrs</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Beginner–moderate</span>
+        <span class="chip good">MTR accessible</span>
+        <span class="chip good">Ends at a beach</span>
+        <span class="chip">Ridge / ocean views</span>
+        <span class="chip warn">No shops on trail</span>
+      </div>
+      <ul class="notes">
+        <li>Undulating ridgeline that resembles a dragon's spine — panoramic views of Shek O, Big Wave Bay, and the South China Sea</li>
+        <li>Only a ~30 min uphill walk from the MTR to the trailhead — no car needed from TST</li>
+        <li>Finishes at <strong>Big Wave Bay</strong> beach, where there are cafés and food — good payoff to end on</li>
+        <li>Well-signposted throughout; sturdy trainers or boots recommended for the steeper parts</li>
+      </ul>
+    </div>
+
+    <div class="cost">
+      <h3>Before you go</h3>
+      <div class="cap">Practical notes for a group morning out</div>
+      <ul class="notes" style="margin-top:.2rem;">
+        <li><strong>Timing:</strong> start before 9 AM or avoid weekends — it's popular and gets crowded on the ridge</li>
+        <li><strong>Bring:</strong> water and snacks — there's nothing on the trail itself until Big Wave Bay</li>
+        <li><strong>Weather:</strong> mid-Jan is cool and dry (14–19°C) — ideal hiking conditions, pack a light layer for the exposed ridge</li>
+        <li><strong>Getting there:</strong> MTR to Shau Kei Wan, then bus/taxi to To Tei Wan trailhead</li>
+      </ul>
+      <p class="fine">Fits naturally as a swap for — or add-on to — the Peak/Central or Lantau day, depending on the group's appetite for a real walk.</p>
+    </div>
+
+    <div style="margin-top:1.6rem;">
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;">Other trails if the group wants variety: Victoria Peak / HK Trail Section 1 (flat, easy, pairs with the Peak Tram day), Lantau Peak or Sunset Peak (tougher climbs, sunrise/sunset views), MacLehose Section 2 (13.5 km coastal, bigger day, further from TST).</p>
+    </div>
+  </section>
+  <section class="panel" id="daytrips" role="tabpanel" aria-labelledby="tab-daytrips">
+    <div class="panel-head">
+      <h2>Activities</h2>
+      <p>Big-ticket days out. Disney is the anchor; Macau and Lantau round it out.</p>
+    </div>
+
+    <div class="hotel">
+      <div class="hotel-top">
+        <div>
+          <h3>Hong Kong Disneyland</h3>
+          <div class="tag">Lantau Island · reachable by MTR Disneyland Resort line</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">~$185</div>
+          <div class="unit">1-day / adult</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">World of Frozen</span>
+        <span class="chip good">Mystic Manor</span>
+        <span class="chip good">Full-day (10 AM–8 PM)</span>
+        <span class="chip">Smaller than Tokyo/US parks</span>
+        <span class="chip warn">Frozen rides: 60–90 min waits</span>
+      </div>
+      <ul class="notes">
+        <li><strong>World of Frozen</strong> — the world's first and largest Frozen-themed land; Frozen Ever After is the standout ride</li>
+        <li>Other must-dos: Mystic Manor, Big Grizzly Mountain Runaway Mine Cars, Festival of the Lion King, and the Momentous nighttime show</li>
+        <li>Smaller than other Disney parks but doable in one full day; a 2-day pass only makes sense if staying at a Disney hotel</li>
+        <li>Consider <strong>Premier Access</strong> (per-ride skip) or the 3-ride pass to beat the Frozen queues — buy early in the app, prices climb through the day</li>
+      </ul>
+      <p class="fine">Ticket ~US$184–187/adult via resellers; Trip.com lists standalone days from ~$76 on promo. Not live-rechecked for Jan 2027 — confirm at booking. For 7 people, factor the group total plus any skip-the-line passes.</p>
+    </div>
+
+    <div class="hotel">
+      <div class="hotel-top">
+        <div>
+          <h3>Macau</h3>
+          <div class="tag">~1 hr ferry · casinos, Portuguese old town, egg tarts</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">1 hr</div>
+          <div class="unit">by ferry</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip">Cotai casinos</span>
+        <span class="chip">Ruins of St. Paul's</span>
+        <span class="chip">Senado Square</span>
+        <span class="chip warn">Bring passports</span>
+      </div>
+      <ul class="notes">
+        <li>Easy day trip via TurboJET / Cotai Water Jet — but note the China Ferry Terminal (near the TST hotels) reportedly no longer runs the Macau route, so check departure point (Sheung Wan / Kowloon)</li>
+        <li>It's a separate immigration crossing — everyone needs their passport</li>
+      </ul>
+    </div>
+
+    <div class="hotel">
+      <div class="hotel-top">
+        <div>
+          <h3>Lantau Island</h3>
+          <div class="tag">Big Buddha, Ngong Ping 360, Tai O fishing village</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">Half+</div>
+          <div class="unit">day</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Cable car</span>
+        <span class="chip">Tian Tan Buddha</span>
+        <span class="chip">Stilt-house village</span>
+        <span class="chip warn">Cable car queues on weekends</span>
+      </div>
+      <ul class="notes">
+        <li>Ngong Ping 360 cable car up to the Big Buddha and monastery, then Tai O for the stilt houses and pink-dolphin boat tours</li>
+        <li>Go at opening if it lands on a weekend — cable car lines get long</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>Hong Kong · January 2027 · working draft</footer>
+</main>
+
+<script>
+  // Map: centered on TST, both hotels plotted
+  const hotels = [
+    { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: true },
+    { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false }
+  ];
+  const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.2966, 114.1706], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+  hotels.forEach(h => {
+    L.marker([h.lat, h.lng]).addTo(map)
+      .bindTooltip(h.name, {
+        permanent: true,
+        direction: 'top',
+        offset: [-14, -8],
+        className: 'leaflet-marker-label' + (h.pick ? ' pick' : '')
+      });
+  });
+  // Re-size the map when the Hotels tab becomes visible (guards against 0-height init)
+  const hotelsPanel = document.getElementById('hotels');
+  document.getElementById('tab-hotels').addEventListener('click', () => {
+    setTimeout(() => map.invalidateSize(), 60);
+  });
+  window.addEventListener('load', () => setTimeout(() => map.invalidateSize(), 100));
+
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+  const panels = Array.from(document.querySelectorAll('.panel'));
+  function select(tab) {
+    tabs.forEach(t => t.setAttribute('aria-selected', String(t === tab)));
+    const id = tab.getAttribute('aria-controls');
+    panels.forEach(p => p.classList.toggle('active', p.id === id));
+  }
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const dir = e.key === 'ArrowRight' ? 1 : -1;
+        const next = tabs[(i + dir + tabs.length) % tabs.length];
+        next.focus(); select(next);
+      }
+    });
+  });
+</script>
+</body>
+</html>
