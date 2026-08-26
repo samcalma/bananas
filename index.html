@@ -32,6 +32,40 @@
     letter-spacing:-0.01em;
   }
 
+  .ai-watermark{
+    position:absolute;
+    right:24px; top:20px;
+    width:64px; height:64px;
+    z-index:1;
+    pointer-events:none;
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 24px 60px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .ai-credit{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    color:var(--ink-soft);
+    opacity:0.75;
+  }
+  .ai-credit svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+  }
+  .ai-credit span{
+    font-size:11.5px;
+  }
+
   /* ---------- Hero ---------- */
   .hero{
     position:relative;
@@ -136,6 +170,17 @@
 <body>
 
 <div class="hero">
+  <svg class="ai-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g transform="translate(50,55)" fill="none" stroke="#F4EFE2" stroke-width="3" opacity="0.14">
+      <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+      <circle cx="-10" cy="-12" r="4"/>
+      <circle cx="10" cy="-12" r="4"/>
+      <line x1="0" y1="-28" x2="0" y2="-40"/>
+      <circle cx="0" cy="-43" r="3.5"/>
+      <line x1="-24" y1="0" x2="-34" y2="10"/>
+      <line x1="24" y1="0" x2="34" y2="10"/>
+    </g>
+  </svg>
   <div class="hero-inner">
     <p class="eyebrow">Don't Panic</p>
     <h1>Enter at Your <em>Own Risk</em> ;)</h1>
@@ -154,6 +199,23 @@
     </div>
   </div>
 </div>
+
+<footer>
+  <div class="ai-credit">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4">
+        <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+        <circle cx="-10" cy="-12" r="4"/>
+        <circle cx="10" cy="-12" r="4"/>
+        <line x1="0" y1="-28" x2="0" y2="-40"/>
+        <circle cx="0" cy="-43" r="3.5"/>
+        <line x1="-24" y1="0" x2="-34" y2="10"/>
+        <line x1="24" y1="0" x2="34" y2="10"/>
+      </g>
+    </svg>
+    <span>Compiled with AI assistance — verify details before booking or visiting.</span>
+  </div>
+</footer>
 
 </body>
 </html>

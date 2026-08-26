@@ -32,6 +32,7 @@
 
   /* Header */
   header {
+    position: relative;
     background:
       radial-gradient(120% 140% at 100% 0%, rgba(31,111,92,.16), transparent 55%),
       var(--jade-deep);
@@ -348,14 +349,13 @@
   .ai-credit svg { width: 16px; height: 16px; flex-shrink: 0; }
   .ai-credit span { font-size: .72rem; }
   .ai-credit-header {
-    display: inline-flex;
-    align-items: center;
-    gap: .3rem;
+    position: absolute;
+    right: 24px;
+    top: 20px;
     opacity: .55;
-    vertical-align: middle;
-    margin-left: .3rem;
+    pointer-events: none;
   }
-  .ai-credit-header svg { width: 28px; height: 28px; flex-shrink: 0; }
+  .ai-credit-header svg { width: 64px; height: 64px; flex-shrink: 0; }
 
   @media (max-width: 520px) {
     .hotel-top { flex-direction: column; }
@@ -366,8 +366,9 @@
 <body>
 
 <header>
+  <span class="ai-credit-header" title="Made with AI" aria-hidden="true"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><g transform="translate(50,55)" fill="none" stroke="#f6f2e8" stroke-width="3" opacity="0.14"><rect x="-24" y="-28" width="48" height="36" rx="7"/><circle cx="-10" cy="-12" r="4"/><circle cx="10" cy="-12" r="4"/><line x1="0" y1="-28" x2="0" y2="-40"/><circle cx="0" cy="-43" r="3.5"/><line x1="-24" y1="0" x2="-34" y2="10"/><line x1="24" y1="0" x2="34" y2="10"/></g></svg></span>
   <div class="wrap">
-    <h1>Hong Kong<span class="cjk">香港</span> <span class="ai-credit-header" title="Made with AI"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4"><rect x="-24" y="-28" width="48" height="36" rx="7"/><circle cx="-10" cy="-12" r="4"/><circle cx="10" cy="-12" r="4"/><line x1="0" y1="-28" x2="0" y2="-40"/><circle cx="0" cy="-43" r="3.5"/><line x1="-24" y1="0" x2="-34" y2="10"/><line x1="24" y1="0" x2="34" y2="10"/></g></svg></span></h1>
+    <h1>Hong Kong<span class="cjk">香港</span></h1>
     <div class="sub">January 12–16, 2027 · four nights in Tsim Sha Tsui</div>
   </div>
 </header>
