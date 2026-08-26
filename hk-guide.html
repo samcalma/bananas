@@ -333,6 +333,30 @@
 
   footer { text-align: center; color: var(--muted); font-size: .78rem; margin-top: 2.5rem; font-style: italic; }
 
+  .ai-credit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: .45rem;
+    margin-top: .7rem;
+    padding-top: .7rem;
+    border-top: 1px dashed var(--line);
+    color: var(--muted);
+    opacity: .75;
+    font-style: normal;
+  }
+  .ai-credit svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .ai-credit span { font-size: .72rem; }
+  .ai-credit-header {
+    display: inline-flex;
+    align-items: center;
+    gap: .3rem;
+    opacity: .55;
+    vertical-align: middle;
+    margin-left: .3rem;
+  }
+  .ai-credit-header svg { width: 28px; height: 28px; flex-shrink: 0; }
+
   @media (max-width: 520px) {
     .hotel-top { flex-direction: column; }
     .price-block { text-align: left; }
@@ -343,7 +367,7 @@
 
 <header>
   <div class="wrap">
-    <h1>Hong Kong<span class="cjk">香港</span></h1>
+    <h1>Hong Kong<span class="cjk">香港</span> <span class="ai-credit-header" title="Made with AI"><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4"><rect x="-24" y="-28" width="48" height="36" rx="7"/><circle cx="-10" cy="-12" r="4"/><circle cx="10" cy="-12" r="4"/><line x1="0" y1="-28" x2="0" y2="-40"/><circle cx="0" cy="-43" r="3.5"/><line x1="-24" y1="0" x2="-34" y2="10"/><line x1="24" y1="0" x2="34" y2="10"/></g></svg></span></h1>
     <div class="sub">January 12–16, 2027 · four nights in Tsim Sha Tsui</div>
   </div>
 </header>
@@ -805,7 +829,13 @@
     </div>
   </section>
 
-  <footer>Hong Kong · January 2027 · working draft</footer>
+  <footer>
+    <div>Hong Kong · January 2027 · working draft</div>
+    <div class="ai-credit">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4"><rect x="-24" y="-28" width="48" height="36" rx="7"/><circle cx="-10" cy="-12" r="4"/><circle cx="10" cy="-12" r="4"/><line x1="0" y1="-28" x2="0" y2="-40"/><circle cx="0" cy="-43" r="3.5"/><line x1="-24" y1="0" x2="-34" y2="10"/><line x1="24" y1="0" x2="34" y2="10"/></g></svg>
+      <span>Compiled with AI assistance — verify details before booking or visiting.</span>
+    </div>
+  </footer>
 </main>
 
 <script>
@@ -862,8 +892,14 @@
     const id = tab.getAttribute('aria-controls');
     panels.forEach(p => p.classList.toggle('active', p.id === id));
     if (updateHash) {
-      // Update the URL hash without adding a scroll jump or a history entry per keystroke
-      history.replaceState(null, '', '#' + id);
+      // Update the URL hash without adding a scroll jump or a history entry per keystroke.
+      // Guarded: replaceState throws in sandboxed iframes with an opaque origin (some previews).
+      try {
+        history.replaceState(null, '', '#' + id);
+      } catch (err) {
+        // Fall back to nothing — tab still switches, just without a shareable URL in this context
+        console.warn('Could not update URL hash:', err.message);
+      }
     }
   }
   // Activate a tab by its panel id (e.g. from the URL hash like #coffee)
@@ -885,12 +921,19 @@
   });
   // On load: if the URL has a hash matching a panel, open that tab
   function applyHash(updateHash) {
-    const id = (location.hash || '').replace('#', '');
+    let id = '';
+    try {
+      id = (location.hash || '').replace('#', '');
+    } catch (err) {
+      return false;
+    }
     return id ? selectById(id, updateHash) : false;
   }
   applyHash(false);
   // Respond to back/forward navigation and manual hash edits
-  window.addEventListener('hashchange', () => applyHash(false));
+  try {
+    window.addEventListener('hashchange', () => applyHash(false));
+  } catch (err) { /* no-op in restrictive contexts */ }
 </script>
 </body>
 </html>
