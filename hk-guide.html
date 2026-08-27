@@ -387,18 +387,18 @@
   <section class="panel active" id="hotels" role="tabpanel" aria-labelledby="tab-hotels">
     <div class="panel-head">
       <h2>Where to stay</h2>
-      <p>Two 5-star options in Tsim Sha Tsui, priced for 3 rooms across 4 nights.</p>
+      <p>Three options across Kowloon and Hong Kong Island, priced for 3 rooms across 4 nights.</p>
     </div>
 
     <div class="verdict">
       <span><strong>Marco Polo</strong> is the value pick —</span>
-      <span class="delta">$683 cheaper</span>
-      <span>even after matching breakfast, with larger rooms. Mondrian wins on newness &amp; design.</span>
+      <span class="delta">$3,938 all-in</span>
+      <span>cheapest with breakfast matched. Mondrian wins on newness &amp; design. Lanson Place offers apartment-style rooms on Hong Kong Island.</span>
     </div>
 
     <div class="map-wrap">
       <div id="hotel-map"></div>
-      <div class="map-cap">Both hotels sit in Tsim Sha Tsui, Kowloon — walking distance to the Star Ferry and Harbour City.</div>
+      <div class="map-cap">Marco Polo &amp; Mondrian sit in Tsim Sha Tsui, Kowloon. Lanson Place is across the harbour in Causeway Bay, Hong Kong Island.</div>
     </div>
 
     <div class="hotel pick">
@@ -453,20 +453,47 @@
       </ul>
     </div>
 
+    <div class="hotel">
+      <div class="hotel-top">
+        <div>
+          <h3>Lanson Place Causeway Bay</h3>
+          <div class="tag">133 Leighton Road, Causeway Bay · serviced residence</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">$4,241</div>
+          <div class="unit">3 rooms · room only</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Apartment-style rooms</span>
+        <span class="chip good">Causeway Bay MTR steps away</span>
+        <span class="chip good">Near Times Square mall</span>
+        <span class="chip good">Kitchen facilities</span>
+        <span class="chip warn">HK Island — harbour crossing to Kowloon</span>
+        <span class="chip warn">No breakfast included</span>
+      </div>
+      <ul class="notes">
+        <li>Serviced residence format — more living space and kitchen facilities vs a standard hotel room</li>
+        <li>Causeway Bay is one of HK's top dining and shopping districts; Happy Valley racecourse nearby</li>
+        <li>MTR Causeway Bay station is at the doorstep — ~15 min to Tsim Sha Tsui MTR, or 10 min via Star Ferry from Wan Chai</li>
+        <li>Breakfast is <strong>$33 / person / day</strong> — not in the total above</li>
+      </ul>
+    </div>
+
     <div class="cost">
       <h3>Like-for-like cost</h3>
-      <div class="cap">Both with breakfast, 3 rooms · 4 nights · 7 people</div>
+      <div class="cap">All with breakfast matched, 3 rooms · 4 nights · 7 people</div>
       <table>
         <thead>
-          <tr><th>Line</th><th style="text-align:right">Marco Polo</th><th style="text-align:right">Mondrian</th></tr>
+          <tr><th>Line</th><th style="text-align:right">Marco Polo</th><th style="text-align:right">Mondrian</th><th style="text-align:right">Lanson Place</th></tr>
         </thead>
         <tbody>
-          <tr><td>Rooms (4 nights)</td><td class="n">$3,014.29</td><td class="n">$4,621.63</td></tr>
-          <tr><td>Breakfast add-on</td><td class="n">+$924.00</td><td class="n">incl.</td></tr>
-          <tr class="total"><td>All-in</td><td class="n">$3,938.29</td><td class="n">$4,621.63</td></tr>
+          <tr><td>Rooms (4 nights)</td><td class="n">$3,014.29</td><td class="n">$4,621.63</td><td class="n">$4,241.45</td></tr>
+          <tr><td>Breakfast add-on</td><td class="n">+$924.00</td><td class="n">incl.</td><td class="n">+$924.00</td></tr>
+          <tr class="total"><td>All-in</td><td class="n">$3,938.29</td><td class="n">$4,621.63</td><td class="n">$5,165.45</td></tr>
         </tbody>
       </table>
-      <p class="fine">Marco Polo stays ~$683 cheaper on a matched basis. Room-only, the gap is ~$1,607. Figures are quotes you pulled, not live-rechecked for Jan 2027.</p>
+      <p class="fine">Marco Polo cheapest all-in by ~$683 vs Mondrian and ~$1,227 vs Lanson Place. Figures are quotes you pulled, not live-rechecked for Jan 2027.</p>
     </div>
   </section>
 
@@ -840,7 +867,7 @@
 </main>
 
 <script>
-  // Map: centered on Tsim Sha Tsui, both hotels plotted.
+  // Map: covers both Tsim Sha Tsui hotels and Lanson Place in Causeway Bay.
   // Guarded so a blocked CDN (no Leaflet) degrades gracefully instead of halting the page.
   (function initMap() {
     const el = document.getElementById('hotel-map');
@@ -854,15 +881,16 @@
       el.style.padding = '1.5rem';
       el.style.color = 'var(--muted)';
       el.style.fontStyle = 'italic';
-      el.innerHTML = 'Map needs an internet connection to load.<br>Marco Polo (3 Canton Rd) and Mondrian (8A Hart Ave) are ~500 m apart in Tsim Sha Tsui.';
+      el.innerHTML = 'Map needs an internet connection to load.<br>Marco Polo (3 Canton Rd) and Mondrian (8A Hart Ave) are in Tsim Sha Tsui. Lanson Place (133 Leighton Rd) is across the harbour in Causeway Bay.';
       return;
     }
     try {
       const hotels = [
         { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: true },
-        { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false }
+        { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false },
+        { name: "Lanson Place", lat: 22.2804, lng: 114.1839, pick: false }
       ];
-      const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.2966, 114.1706], 15);
+      const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.289, 114.176], 14);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; OpenStreetMap'
