@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BGC / Bonifacio High Street Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root{
+    --ink:#20242B;         /* charcoal — glass tower dusk */
+    --ink-soft:#3A3F4A;
+    --gold:#B8763F;        /* copper accent — rooftop string lights */
+    --gold-soft:#D9A876;
+    --cream:#F4EFE6;       /* warm off-white */
+    --rust:#7C93A8;        /* cool steel-blue, for flags/contrast */
+    --line: rgba(32,36,43,0.14);
+    --shadow: 0 18px 40px -22px rgba(32,36,43,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    background:var(--ink);
+    color:var(--cream);
+    padding:64px 24px 56px;
+    overflow:hidden;
+  }
+  .hero-inner{
+    max-width:1040px;
+    margin:0 auto;
+    position:relative;
+    z-index:2;
+  }
+  .eyebrow{
+    font-size:12.5px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--gold-soft);
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px;height:1px;background:var(--gold);
+    display:inline-block;
+  }
+  .hero h1{
+    font-size:clamp(34px,5.4vw,58px);
+    line-height:1.04;
+    margin:0 0 16px;
+  }
+  .hero h1 em{
+    font-style:italic;
+    color:var(--gold-soft);
+  }
+  .hero p.sub{
+    max-width:560px;
+    font-size:16px;
+    line-height:1.6;
+    color:#D9DED2;
+    margin:0;
+  }
+  .cross-link{
+    display:inline-block;
+    margin-top:16px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--gold-soft);
+    text-decoration:none;
+    border-bottom:1px solid rgba(217,168,118,0.4);
+    padding-bottom:1px;
+  }
+  .cross-link:hover{
+    color:#fff;
+    border-bottom-color:#fff;
+  }
+  .skyline{
+    position:absolute;
+    right:-40px; bottom:-6px;
+    width:56%; max-width:620px;
+    opacity:0.5;
+    z-index:1;
+  }
+  .ai-watermark{
+    position:absolute;
+    right:24px; top:20px;
+    width:64px; height:64px;
+    z-index:1;
+    pointer-events:none;
+  }
+
+  /* ---------- Filter bar ---------- */
+  /* ---------- Tabs ---------- */
+  .tabbar{
+    max-width:1040px;
+    margin:22px auto 0;
+    padding:0 24px;
+    display:flex;
+    gap:8px;
+    border-bottom:1px solid var(--line);
+  }
+  .tab{
+    border:none;
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'Manrope',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    padding:12px 6px 14px;
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab:hover{ color:var(--ink); }
+  .tab.active{
+    color:var(--ink);
+    border-bottom-color:var(--gold);
+  }
+  .tab:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  .empty-state{
+    text-align:center;
+    padding:64px 24px;
+    border:1px dashed var(--line);
+    border-radius:16px;
+    background:#fff;
+  }
+  .empty-title{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .empty-sub{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0;
+  }
+
+  .filterbar{
+    max-width:1040px;
+    margin:-26px auto 0;
+    position:relative;
+    z-index:3;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:14px 18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+  }
+  .filterbar span.label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-soft);
+    margin-right:4px;
+  }
+  .chip{
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--ink);
+    font-family:'Manrope',sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    padding:8px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    transition:all .18s ease;
+  }
+  .chip:hover{ border-color:var(--gold); }
+  .chip.active{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--cream);
+  }
+  .chip:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+
+  /* ---------- Grid ---------- */
+  main{
+    max-width:1040px;
+    margin:0 auto;
+    padding:40px 24px 80px;
+  }
+  .count{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 20px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    gap:20px;
+    margin-bottom:40px;
+  }
+  .single-wrap{
+    display:grid;
+    grid-template-columns:minmax(280px,340px) 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:640px){
+    .single-wrap{ grid-template-columns:1fr; }
+  }
+  .card.feature{
+    height:100%;
+  }
+  .map-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+  }
+  .map-caption{
+    margin:0;
+    padding:12px 16px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 22px 20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow);
+  }
+  .card-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .card h3{
+    font-size:19px;
+    margin:0;
+    line-height:1.25;
+  }
+  .tier{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    font-weight:700;
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .tier.luxury{ background:rgba(200,162,74,0.18); color:#8A6A1F; }
+  .tier.business{ background:rgba(18,49,43,0.10); color:var(--ink); }
+  .tier.boutique{ background:rgba(166,82,46,0.14); color:var(--rust); }
+  .area{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:-4px 0 0;
+  }
+  .blurb{
+    font-size:13.8px;
+    line-height:1.55;
+    color:#3C4B45;
+    margin:0;
+    flex-grow:1;
+  }
+  .card-foot{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:6px;
+    padding-top:12px;
+    border-top:1px dashed var(--line);
+    font-size:12.5px;
+  }
+  .price{
+    font-weight:700;
+    color:var(--ink);
+  }
+  .price span{
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:11.5px;
+  }
+  .note-btn{
+    color:var(--rust);
+    font-weight:600;
+    text-decoration:none;
+  }
+
+  .ig-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;
+    height:26px;
+    margin-left:8px;
+    border-radius:7px;
+    color:var(--ink-soft);
+    transition:color .15s ease, background .15s ease;
+    vertical-align:middle;
+  }
+  .ig-link:hover{
+    color:#fff;
+    background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  }
+  .ig-link svg{ width:16px; height:16px; }
+
+  .card.flagged{
+    border-color: rgba(166,82,46,0.4);
+    background: linear-gradient(180deg, rgba(166,82,46,0.05), #fff 60px);
+  }
+
+  .rating{
+    margin:2px 0 0;
+    font-size:12.5px;
+    font-weight:700;
+    color:#8A6A1F;
+  }
+  .rating span{
+    font-weight:500;
+    color:var(--ink-soft);
+    font-size:11.5px;
+  }
+  .rating-low{ color:var(--rust); }
+
+  .price-note{
+    margin:8px 0 0;
+    font-size:12px;
+    line-height:1.5;
+    color:var(--ink-soft);
+  }
+
+  footer{
+    max-width:1040px;
+    margin:0 auto;
+    padding:0 24px 60px;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+
+  .ai-credit{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+    color:var(--ink-soft);
+    opacity:0.75;
+  }
+  .ai-credit svg{
+    width:18px;
+    height:18px;
+    flex-shrink:0;
+  }
+  .ai-credit span{
+    font-size:11.5px;
+  }
+
+  .area-map{ margin-top:56px; }
+
+  .map-label{
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(18,49,43,0.25);
+  }
+  .map-label::before{
+    border-top-color: var(--ink) !important;
+  }
+  .map-label-anchor{
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .map-label-anchor::before{
+    border-top-color: var(--gold) !important;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Bonifacio Global City · Taguig</p>
+    <h1>BGC / <em>High Street</em><br>Guide</h1>
+    <p class="sub">Anchored on Bonifacio High Street — hotels, restaurants, coffee, and shopping within walking distance.</p>
+    <a class="cross-link" href="makati-hotels.html">↔ Also see the Makati CBD / Greenbelt guide</a>
+  </div>
+  <svg class="skyline" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#F4EFE6">
+      <rect x="10" y="140" width="34" height="120"/>
+      <rect x="50" y="90" width="28" height="170"/>
+      <rect x="84" y="150" width="30" height="110"/>
+      <rect x="120" y="60" width="26" height="200"/>
+      <rect x="152" y="110" width="34" height="150"/>
+      <rect x="192" y="40" width="24" height="220"/>
+      <rect x="222" y="130" width="30" height="130"/>
+      <rect x="258" y="75" width="28" height="185"/>
+      <rect x="292" y="150" width="26" height="110"/>
+      <rect x="324" y="95" width="30" height="165"/>
+      <rect x="360" y="55" width="24" height="205"/>
+      <rect x="390" y="125" width="30" height="135"/>
+      <rect x="426" y="100" width="26" height="160"/>
+      <rect x="458" y="145" width="28" height="115"/>
+    </g>
+  </svg>
+  <svg class="ai-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g transform="translate(50,55)" fill="none" stroke="#F4EFE6" stroke-width="3" opacity="0.14">
+      <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+      <circle cx="-10" cy="-12" r="4"/>
+      <circle cx="10" cy="-12" r="4"/>
+      <line x1="0" y1="-28" x2="0" y2="-40"/>
+      <circle cx="0" cy="-43" r="3.5"/>
+      <line x1="-24" y1="0" x2="-34" y2="10"/>
+      <line x1="24" y1="0" x2="34" y2="10"/>
+    </g>
+  </svg>
+</section>
+
+<nav class="tabbar" role="tablist" aria-label="Section">
+  <button class="tab active" data-tab="hotels" role="tab" aria-selected="true">Hotels</button>
+  <button class="tab" data-tab="restaurants" role="tab" aria-selected="false">Restaurants</button>
+  <button class="tab" data-tab="coffee" role="tab" aria-selected="false">Coffee</button>
+  <button class="tab" data-tab="shopping" role="tab" aria-selected="false">Shopping</button>
+  <button class="tab" data-tab="notes" role="tab" aria-selected="false">Good to Know</button>
+  <button class="tab" data-tab="todo" role="tab" aria-selected="false">Things to Do</button>
+</nav>
+
+<main>
+  <div class="panel active" id="panel-hotels">
+    <p class="count" id="count">2 hotels</p>
+    <div class="grid" id="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>F1 Hotel Manila BGC</h3>
+          <span class="tier business">Business</span>
+        </div>
+        <p class="area">32nd St cnr Lane A, BGC · ~500m from Bonifacio High Street</p>
+        <p class="rating">★ 4.0 <span>(2,798 Google reviews)</span></p>
+        <p class="blurb">4-star, the first hotel to open in BGC — reliably good marks for location, staff, and breakfast. Rooms can feel a bit dated and a handful of reviewers mention A/C or Wi-Fi hiccups, but nothing that comes up as a dealbreaker.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>from ~$58/night</span></span>
+          <a class="note-btn" href="https://f1hotelmanila.com.ph/" target="_blank" rel="noopener">website ↗</a>
+          <a class="ig-link" href="https://www.instagram.com/f1hotelmanila/" target="_blank" rel="noopener" aria-label="F1 Hotel Manila on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Red Planet BGC – The Fort</h3>
+          <span class="tier business">Budget / Value</span>
+        </div>
+        <p class="area">10th Ave cor 40th St, BGC · ~1.1km from Bonifacio High Street (not walkable)</p>
+        <p class="rating">★ 4.4 <span>(527 Google reviews)</span></p>
+        <p class="blurb">Alternative to F1 in the same price bracket — budget/value chain, compact rooms as expected for the brand, but consistently praised for cleanliness and friendly staff. Walkable to Uptown Mall. Farther from High Street than F1, so weigh location against price.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>similar range to F1</span></span>
+          <a class="note-btn" href="https://www.booking.com/hotel/ph/red-planet-manila-bgc-the-fort.html" target="_blank" rel="noopener">website ↗</a>
+          <a class="ig-link" href="https://www.instagram.com/redplanetph/" target="_blank" rel="noopener" aria-label="Red Planet Hotels Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="map-card area-map">
+      <div id="area-leaflet-map" style="width:100%; height:380px;"></div>
+      <p class="map-caption">Centered on Bonifacio High Street — circles mark hotels, diamonds mark restaurants, squares mark coffee, all with walking distance.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-restaurants">
+    <p class="count">9 restaurants</p>
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Din Tai Fung (Bonifacio High Street)</h3>
+          <span class="tier business">Taiwanese</span>
+        </div>
+        <p class="area">L/G C1, Bonifacio High Street Central, 30th St · inside High Street</p>
+        <p class="rating">★ 4.6 <span>(4,637 Google reviews)</span></p>
+        <p class="blurb">The original BGC branch, right on the High Street. Signature Xiao Long Bao and Pork Chop Fried Rice remain the draw; a few recent reviews are more mixed than DTF's usual reputation, comparing it unfavorably to other Chinese spots in Manila — worth noting rather than assuming it's uniformly excellent.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+6328091865">+63 2 8809 1865</a>
+          <a class="ig-link" href="https://www.instagram.com/dintaifungph/" target="_blank" rel="noopener" aria-label="Din Tai Fung Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–11pm Mon–Thu · 10am–1am Fri–Sat · 10am–11pm Sun.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Din Tai Fung (Uptown Parade)</h3>
+          <span class="tier business">Taiwanese</span>
+        </div>
+        <p class="area">Uptown Parade, Uptown BGC · ~700m from Bonifacio High Street</p>
+        <p class="rating">★ 4.6 <span>(650 Google reviews)</span></p>
+        <p class="blurb">Second BGC branch, opened Nov 2024 — newer and generally shorter queues than the High Street location. Same menu; Chocolate XLB and Crispy Beef Strips get called out most. A couple of reviews call it "kind of overrated" relative to the hype, worth tempering expectations slightly.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+63287120467">+63 2 8712 0467</a>
+          <a class="ig-link" href="https://www.instagram.com/dintaifungph/" target="_blank" rel="noopener" aria-label="Din Tai Fung Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 10am–10pm Mon–Thu &amp; Sun · 10am–12am Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Wildflour Café + Bakery</h3>
+          <span class="tier boutique">Brunch / All-Day Dining</span>
+        </div>
+        <p class="area">Ground Floor Six/NEO, 4th Ave cor 26th St · ~650m from High Street</p>
+        <p class="rating">★ 4.5 <span>(3,027 Google reviews)</span></p>
+        <p class="blurb">Manila's benchmark brunch spot — bakery-café hybrid known for pastries (the croissants come up constantly) alongside a full all-day menu. Roast organic chicken is a standout main. Multiple Metro Manila branches; this is the BGC/26th St location. Reviews are consistently strong, though a couple flag slower service at peak Sunday brunch hours.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate to upscale</span></span>
+          <a class="note-btn" href="tel:+639178520950">+63 917 852 0950</a>
+          <a class="ig-link" href="https://www.instagram.com/wildflourrestaurant/" target="_blank" rel="noopener" aria-label="Wildflour Restaurant on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–10pm Mon–Thu &amp; Sun · 7am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>The Peak</h3>
+          <span class="tier luxury">Rooftop Grill / Bar</span>
+        </div>
+        <p class="area">60th–62nd Floor, Grand Hyatt Manila, 8th Ave cor 35th St · ~1km from High Street</p>
+        <p class="rating">★ 4.2 <span>(45 Google reviews)</span></p>
+        <p class="blurb">The highest bar in the country — four-in-one rooftop (charcoal grill, speakeasy, whisky bar, music lounge) atop the tallest building in Manila. 360° city views, live DJs Tue–Sat. Reviews call it "remarkable value for a five-star rooftop," though a few flag average drinks for the price and inconsistent service on busy nights. Smart casual dress code; kids allowed at the grill but not the bar.</p>
+        <div class="card-foot">
+          <span class="price">$$$ <span>upscale</span></span>
+          <a class="note-btn" href="tel:+63288381234">+63 2 8838 1234</a>
+          <a class="ig-link" href="https://www.instagram.com/thepeakmanila/" target="_blank" rel="noopener" aria-label="The Peak on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Grill hours: 5:30pm–11pm daily · Bar/lounge until 12:30am.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Kenshin Japanese Izakaya</h3>
+          <span class="tier boutique">Izakaya</span>
+        </div>
+        <p class="area">Unit A3 &amp; B4, Post Proper, Forbestown Rd · ~650m from High Street</p>
+        <p class="rating">★ 4.1 <span>(98 Google reviews)</span></p>
+        <p class="blurb">Standalone izakaya, not mall-based — open very late (until 2–5am most nights). Affordable, generous portions, described as "legit Tokyo vibes." One of several Kenshin branches in Metro Manila; this is the only BGC location.</p>
+        <div class="card-foot">
+          <span class="price">$ <span>budget-friendly</span></span>
+          <a class="note-btn" href="tel:+639176712026">+63 917 671 2026</a>
+          <a class="ig-link" href="https://www.instagram.com/kenshin.ph/" target="_blank" rel="noopener" aria-label="Kenshin PH on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–2am Mon · 11am–5am Tue–Sun.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Genki Sushi (BGC Stopover)</h3>
+          <span class="tier boutique">Conveyor-Belt Sushi</span>
+        </div>
+        <p class="area">Bonifacio Stopover, 31st St · ~650m from High Street</p>
+        <p class="rating">★ 4.4 <span>(93 Google reviews)</span></p>
+        <p class="blurb">Standalone location, not inside a mall — their original BGC branch (2015), bullet-train delivery system rather than a true loop conveyor. Regulars say quality here edges out the SM Aura branch. Fun for kids; order via tablet.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/genkisushiph/" target="_blank" rel="noopener" aria-label="Genki Sushi Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm daily.</p>
+      </article>
+
+      <article class="card flagged" data-tier="boutique">
+        <div class="card-top">
+          <h3>Genki Sushi (SM Aura)</h3>
+          <span class="tier boutique">Conveyor-Belt Sushi</span>
+        </div>
+        <p class="area">Lower Ground, SM Aura Premier · ~700m from High Street</p>
+        <p class="rating">★ 4.3 <span>(787 Google reviews)</span></p>
+        <p class="blurb">The mall branch — same concept, higher traffic. A couple of independent reviews report food poisoning after eating sashimi here; not the dominant sentiment (787 reviews mostly positive) but specific and repeated enough to flag rather than ignore. If ordering raw fish, that's worth weighing.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+6327955205">+63 2 7955 2205</a>
+          <a class="ig-link" href="https://www.instagram.com/genkisushiph/" target="_blank" rel="noopener" aria-label="Genki Sushi Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours vary — check current listing.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Manam (Uptown Mall)</h3>
+          <span class="tier luxury">Modern Filipino</span>
+        </div>
+        <p class="area">9th Ave, Uptown Mall · ~1km from High Street</p>
+        <p class="rating">★ 4.8 <span>(2,647 Google reviews)</span></p>
+        <p class="blurb">Different branch from Manam at the Triangle (that one's on the Makati page) — this is the Uptown BGC location, part of The Moment Group. Sinigang na Beef Short Rib and Watermelon and Crispy Sisig are the house specialties. Consistently high-rated; expect a wait since it's always packed, though service reportedly stays quick even under pressure.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/manamph/" target="_blank" rel="noopener" aria-label="Manam Comfort Filipino on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 8am–10pm Mon–Thu &amp; Sun · 8am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Shake Shack</h3>
+          <span class="tier business">Burgers</span>
+        </div>
+        <p class="area">Lower Ground, Central Square, Bonifacio High Street, 5th Ave · inside High Street</p>
+        <p class="rating">★ 4.2 <span>(2,044 Google reviews)</span></p>
+        <p class="blurb">The Philippines' first-ever Shake Shack, opened May 2019. ShackBurger and the Ube Shake (a Manila-exclusive) are the standard order. Consistently busy — expect a short wait most days, but reviews are steady on quality.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639171830574">+63 917 183 0574</a>
+          <a class="ig-link" href="https://www.instagram.com/shakeshackph/" target="_blank" rel="noopener" aria-label="Shake Shack Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–9pm Mon–Thu · 7am–11pm Fri–Sat · 7am–10pm Sun.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-coffee">
+    <p class="count">6 coffee spots</p>
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Single Origin</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">C3 Building, Bonifacio High Street Central, 7th Ave · inside High Street</p>
+        <p class="rating">★ 4.2 <span>(1,146 Google reviews)</span></p>
+        <p class="blurb">The original flagship — opened 2014, before the Salcedo Village (Makati) branch existed. All-day specialty coffee, brunch, craft beer and cocktails built around showcasing regional single-origin beans. Open 7am to midnight. Considered a BGC original that's held up over a decade.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639062688902">+63 906 268 8902</a>
+          <a class="ig-link" href="https://www.instagram.com/singleoriginph/" target="_blank" rel="noopener" aria-label="Single Origin on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–12am daily.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>harlan + holden coffee (BHS Central)</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">C1 Park, Bonifacio High Street · inside High Street</p>
+        <p class="rating">★ 4.4 <span>(1,196 Google reviews)</span></p>
+        <p class="blurb">Unlike the kiosk-only Greenbelt branch, this High Street location is a proper full-scale coffee shop — high ceilings, plenty of seating, minimalist glass design. Sea Salt and Butterscotch Lattes are the standouts. Self-service via tablet ordering, cashless only.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639274522227">+63 927 452 2227</a>
+          <a class="ig-link" href="https://www.instagram.com/harlanholden.coffee/" target="_blank" rel="noopener" aria-label="harlan + holden coffee on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 6am–12am daily.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>% Arabica (Shangri-La The Fort)</h3>
+          <span class="tier business">Specialty Coffee</span>
+        </div>
+        <p class="area">GF, Shangri-La at The Fort, 5th Ave · ~250m from High Street</p>
+        <p class="rating">★ 4.3 <span>(412 Google reviews)</span></p>
+        <p class="blurb">Kyoto-origin minimalist chain, back in the Philippines after closing operations in 2022. Signature all-white, light-filled design. A second BGC location exists at Mitsukoshi. Reviews are consistent but split on whether it's worth the price versus the aesthetic.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639171091053">+63 917 109 1053</a>
+          <a class="ig-link" href="https://www.instagram.com/arabica.ph/" target="_blank" rel="noopener" aria-label="% Arabica Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–10pm Mon–Thu &amp; Sun · 7am–12am Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>The Fat Seed Cafe + Roastery</h3>
+          <span class="tier boutique">Specialty Coffee / Roastery</span>
+        </div>
+        <p class="area">One Maridien, 9th Ave cor 27th St · ~700m from High Street</p>
+        <p class="rating">★ 4.5 <span>(900 Google reviews)</span></p>
+        <p class="blurb">Genuinely independent local roastery — sources Philippine-grown beans (Mt. Apo series) alongside global origins, roasts on-site. Full comfort-food menu (Buttermilk Fried Chicken &amp; Ube Waffles is the signature) rather than just coffee. Consistently one of the highest-rated spots on this list.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+6327001862">+63 2 7001 1862</a>
+          <a class="ig-link" href="https://www.instagram.com/thefatseedph/" target="_blank" rel="noopener" aria-label="The Fat Seed on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 7am–10pm Mon–Thu &amp; Sun · 7am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Starbucks Reserve (Central Square)</h3>
+          <span class="tier business">Specialty Coffee Chain</span>
+        </div>
+        <p class="area">B3, Central Square, Bonifacio High Street · inside High Street</p>
+        <p class="rating">★ 4.6 <span>(3,205 Google reviews — mall rating)</span></p>
+        <p class="blurb">One of only two Starbucks Reserve branches in BGC (out of ~7 in all of Metro Manila) — carries small-batch, distinct-origin beans beyond the standard menu. BGC reportedly has the highest Starbucks density in the Philippines; this is the notable one on the High Street itself.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/starbucksph/" target="_blank" rel="noopener" aria-label="Starbucks Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm Mon–Thu &amp; Sun · 11am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Starbucks Reserve (8 Forbestown)</h3>
+          <span class="tier business">Specialty Coffee Chain</span>
+        </div>
+        <p class="area">G/F, Forbes Town Center, 8 Forbestown Rd · Burgos Circle, ~650m from High Street</p>
+        <p class="rating">★ 4.5 <span>(513 Google reviews)</span></p>
+        <p class="blurb">The second BGC Reserve branch, right in Burgos Circle. Open until midnight, stroller-friendly, well-lit with high ceilings — regulars note the baristas remembering names. A practical pick if you're already in Burgos Circle rather than near High Street.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/starbucksph/" target="_blank" rel="noopener" aria-label="Starbucks Philippines on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 6am–12am daily.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-shopping">
+    <p class="count">6 shopping spots</p>
+    <div class="grid">
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Bonifacio High Street</h3>
+          <span class="tier luxury">Outdoor Mall</span>
+        </div>
+        <p class="area">7th Ave · the anchor point for this whole page</p>
+        <p class="rating">★ 4.5 <span>(148 Google reviews)</span></p>
+        <p class="blurb">The original open-air, pedestrian-boulevard mall that BGC's retail identity is built around — opened 2007, since expanded into BHS Central, One Bonifacio High Street, and the High Street South extension. Premium brands, restaurants, and cinemas along a kilometer-long stretch. Reviews note it's a great walk but pricier than most.</p>
+        <div class="card-foot">
+          <span class="price">$$$ <span>varies by section</span></span>
+          <a class="ig-link" href="https://www.instagram.com/bonifaciohighstreet/" target="_blank" rel="noopener" aria-label="Bonifacio High Street on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm Mon–Thu &amp; Sun · 11am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Market! Market!</h3>
+          <span class="tier business">Outdoor / Indoor Mall</span>
+        </div>
+        <p class="area">McKinley Parkway · ~700m from High Street</p>
+        <p class="rating">★ 4.3 <span>(24,552 Google reviews)</span></p>
+        <p class="blurb">Mixed indoor/outdoor mass-market mall, also BGC's main transport hub (bus and jeepney terminals). Caters to a broader budget range than the other malls here — locals describe it as the "real Philippines" version, with a Fiesta Market bazaar-style outdoor section. Note: BCDA has announced redevelopment plans once the lease expires end of 2027.</p>
+        <div class="card-foot">
+          <span class="price">$ <span>value-priced</span></span>
+          <a class="ig-link" href="https://www.instagram.com/ilovemarketmarket/" target="_blank" rel="noopener" aria-label="Market! Market! on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm Mon–Fri · 10am–10pm Sat–Sun.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>SM Aura Premier</h3>
+          <span class="tier luxury">Indoor Mall</span>
+        </div>
+        <p class="area">26th St cor McKinley Pkwy · ~700m from High Street</p>
+        <p class="rating">★ 4.5 <span>(19,608 Google reviews)</span></p>
+        <p class="blurb">SM's upscale flagship in BGC — five floors, rooftop Sky Park with a chapel, SMX Convention Center for events. One of the better food halls in the area across two levels. Some reviews flag security/bag-check friction at entrances as excessive.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate to upscale</span></span>
+          <a class="ig-link" href="https://www.instagram.com/smaurapremier/" target="_blank" rel="noopener" aria-label="SM Aura on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 10am–10pm daily.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Uptown Mall</h3>
+          <span class="tier luxury">Indoor Mall</span>
+        </div>
+        <p class="area">9th Ave cor 36th St, Uptown Bonifacio · ~1km from High Street</p>
+        <p class="rating">★ 4.5 <span>(13,659 Google reviews)</span></p>
+        <p class="blurb">Five levels, plush-recliner cinema, and a nightly water/light fountain show at 6–9pm. Smaller and easier to navigate than High Street or SM Aura — locals describe it as relaxed rather than overwhelming. No dedicated Instagram; linked to the parent Megaworld Lifestyle Malls account, which covers all their properties, not just this one.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate to upscale</span></span>
+          <a class="ig-link" href="https://www.instagram.com/megaworldlifestylemalls/" target="_blank" rel="noopener" aria-label="Megaworld Lifestyle Malls on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 10am–10pm Sun–Thu · 10am–11pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Mitsukoshi BGC</h3>
+          <span class="tier boutique">Indoor Mall / Japanese</span>
+        </div>
+        <p class="area">8th Ave cor 36th St, Grand Central Park · ~1km from High Street</p>
+        <p class="rating">★ 4.4 <span>(2,268 Google reviews)</span></p>
+        <p class="blurb">The Philippines' first Mitsukoshi outlet, opened 2022 — ~120 tenants, mostly Japanese brands. Itadaki Food Court and Mitsukoshi Fresh (a depachika-style food market) are the main draw for imported Japanese groceries and prepared food not found elsewhere in Manila.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/mitsukoshi_bgc/" target="_blank" rel="noopener" aria-label="Mitsukoshi BGC on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–10pm Mon–Fri · 10am–10pm Sat–Sun.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Venice Grand Canal Mall</h3>
+          <span class="tier boutique">Indoor Mall / Italian-themed</span>
+        </div>
+        <p class="area">Upper McKinley Rd, McKinley Hill · ~1.6km from High Street (not walkable)</p>
+        <p class="rating">★ 4.5 <span>(21,495 Google reviews)</span></p>
+        <p class="blurb">Technically McKinley Hill township, not BGC proper, but frequently grouped together and worth including. A 200m replica canal with gondola rides, Rialto Bridge and St. Mark's Campanile replicas. More a photo-op/novelty destination than serious shopping — restaurants and cafes ring the canal. Popular for date nights, gets crowded weekends.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="ig-link" href="https://www.instagram.com/mckinleyhill_/" target="_blank" rel="noopener" aria-label="McKinley Hill / Venice Grand Canal on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 10am–11pm daily.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-notes">
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Getting around BGC</h3>
+          <span class="tier business">Transport</span>
+        </div>
+        <p class="blurb">Unlike Makati, <strong>jeepneys and tricycles are banned inside BGC itself</strong> — the BGC Bus is the only public transport allowed within the district, and it's cashless only (Beep card or GCash; a one-time ₱15 paper QR ticket is available at the two main terminals). Streets are almost entirely one-way, so missing your stop means riding the full loop (~20–30 min) rather than crossing back.</p>
+        <p class="blurb"><strong>Grab is the easiest way to get around</strong> for anyone unfamiliar with the routes — fare and route are shown upfront, no need to learn the bus loops or jeepney signage. It's the default recommendation for visitors, especially at night or with luggage.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Grab App</h3>
+          <span class="tier business">Transport</span>
+        </div>
+        <p class="blurb">Southeast Asia's main ride-hailing app — also handles food delivery (GrabFood) and groceries (GrabMart). Free to download, pay by cash or card in-app. Worth installing before you land.</p>
+        <div class="card-foot">
+          <a class="note-btn" href="https://apps.apple.com/ph/app/grab-taxi-ride-food-delivery/id647268330" target="_blank" rel="noopener">iOS (App Store) ↗</a>
+          <a class="note-btn" href="https://play.google.com/store/apps/details?id=com.grabtaxi.passenger" target="_blank" rel="noopener">Android (Google Play) ↗</a>
+        </div>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>From NAIA Airport</h3>
+          <span class="tier boutique">Transport</span>
+        </div>
+        <p class="blurb">BGC sits roughly <strong>8km / ~15–20 minutes from NAIA Terminal 3</strong> in light traffic — one of the shorter airport-to-district hops in Metro Manila. That said, travel time is traffic-dependent more than distance-dependent: the same trip can stretch past an hour during rush hour (7–10am, 5–9pm) or in rain. Grab or the airport taxi queue are the simplest options; avoid Fridays if you have a flexible arrival time.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Walkability</h3>
+          <span class="tier boutique">Layout</span>
+        </div>
+        <p class="blurb">BGC is one of Metro Manila's most walkable districts — wide sidewalks, greenery, and a 1.6km linear park (the "Greenway") along the western edge near the golf course. Most of what's on this page sits within a comfortable walking radius of Bonifacio High Street.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Burgos Circle</h3>
+          <span class="tier boutique">Neighborhood</span>
+        </div>
+        <p class="area">Forbes Town Center · ~650m from High Street</p>
+        <p class="blurb">A separate dining/nightlife strip within BGC, not a single venue — an outdoor circle of restaurants, bars, and cafes around a small park, generally more relaxed than the Fort Strip club scene. Daytime is quiet (mostly office workers from nearby JP Morgan, Sun Life); it picks up after dark, especially weekends. Kenshin Japanese Izakaya (on the Restaurants tab) sits right on its edge, along Forbestown Road.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-todo">
+    <p class="count">6 things to do</p>
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>The Mind Museum</h3>
+          <span class="tier business">Museum</span>
+        </div>
+        <p class="area">JY Campos Park, 3rd Ave · ~650m from High Street</p>
+        <p class="rating">★ 4.4 <span>(3,226 Google reviews)</span></p>
+        <p class="blurb">Science museum built for kids but genuinely engaging for adults too — interactive exhibits, an escape room, a robot dance show. Book tickets via Klook ahead of time to skip the line. Gets loud with school groups in the mornings; arrive right at 9am opening or later in the day if you want a quieter visit.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>~₱600/adult</span></span>
+          <a class="note-btn" href="tel:+639178512893">+63 917 851 2893</a>
+          <a class="ig-link" href="https://www.instagram.com/themindmuseum/" target="_blank" rel="noopener" aria-label="The Mind Museum on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 9am–6pm Tue–Sun · Closed Mondays.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Track 30th</h3>
+          <span class="tier boutique">Park / Fitness</span>
+        </div>
+        <p class="area">30th St · inside/adjacent to High Street</p>
+        <p class="rating">★ 4.6 <span>(1,890 Google reviews)</span></p>
+        <p class="blurb">Small fitness-focused park between the High Street shops and 32nd Street — a 310m paved jogging loop, yoga lawn, meditation garden, fitness art installations. Busiest with runners early morning and evening. Pet-friendly (leashed).</p>
+        <div class="card-foot">
+          <span class="price">— <span>free</span></span>
+        </div>
+        <p class="price-note">Hours: 6am–10pm daily.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Breeze Oriental Spa &amp; Massage</h3>
+          <span class="tier luxury">Spa / Massage</span>
+        </div>
+        <p class="area">Orē Central, 9th Ave cor 31st St · ~650m from High Street</p>
+        <p class="rating">★ 4.6 <span>(660 Google reviews)</span></p>
+        <p class="blurb">Consistently the top-rated spa in BGC — calm, clean, oriental-therapy focused with a signature Chinese meridian massage. One review noted a lingering cigarette smell on sheets despite an otherwise clean room; worth a quick check if that matters to you. Open very late, useful post-flight or after a long day of walking.</p>
+        <div class="card-foot">
+          <span class="price">$$$ <span>upscale</span></span>
+          <a class="note-btn" href="tel:+639178676699">+63 917 867 6699</a>
+          <a class="ig-link" href="https://www.instagram.com/breezemassage.ph/" target="_blank" rel="noopener" aria-label="Breeze Oriental Spa &amp; Massage on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–1am Mon–Wed &amp; Sun · 11am–2am Thu–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>The Spa Wellness</h3>
+          <span class="tier luxury">Spa / Massage</span>
+        </div>
+        <p class="area">B8, 9th Ave, Bonifacio High Street · inside High Street</p>
+        <p class="rating">★ 3.9 <span>(178 Google reviews)</span></p>
+        <p class="blurb">National chain, pioneer of the Philippine spa industry since 1996 — this Fort branch is the only one with a Premier Villa (private jacuzzi, steam, shower, overlooking High Street), alongside a shared Deluxe room and a private Executive room. The lower rating traces mostly to Deluxe-room bookings (open shared space, no partitions) — reviewers who booked Executive or Villa consistently rate it highly. Steam room reportedly out of service for a stretch; worth confirming before you go.</p>
+        <div class="card-foot">
+          <span class="price">$$$ <span>varies by room tier</span></span>
+          <a class="note-btn" href="tel:+639988479528">+63 998 847 9528</a>
+          <a class="ig-link" href="https://www.instagram.com/thespawellness/" target="_blank" rel="noopener" aria-label="The Spa Wellness on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 11am–9pm Mon–Thu &amp; Sun · 11am–10pm Fri–Sat.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>City of Beauty</h3>
+          <span class="tier boutique">Head Spa / Hair Treatment</span>
+        </div>
+        <p class="area">GF, Clipp Center, 39th St cor 11th Ave · ~1km from High Street</p>
+        <p class="rating">★ 4.6 <span>(63 Google reviews)</span></p>
+        <p class="blurb">Head spa and hair treatment specialist — Traditional Chinese steam head spa, facials, and hair treatments infused with Chinese medicine. Reviews are consistently strong on relaxation and staff attentiveness, including a specific mention of thoughtful accommodation for a guest with a disability. The clearer pick over Jelly Skin Lab (Uptown Parade), which has a couple of detailed complaints about treatments running short or not matching what was advertised.</p>
+        <div class="card-foot">
+          <span class="price">$$ <span>moderate</span></span>
+          <a class="note-btn" href="tel:+639175888886">+63 917 588 8886</a>
+          <a class="ig-link" href="https://www.instagram.com/cityofbeautybgc/" target="_blank" rel="noopener" aria-label="City of Beauty on Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        </div>
+        <p class="price-note">Hours: 12pm–10pm Mon–Thu &amp; Sat–Sun · 12pm–9pm Fri.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>BGC Greenway Park</h3>
+          <span class="tier boutique">Park</span>
+        </div>
+        <p class="area">130 McKinley Rd · ~600m from High Street</p>
+        <p class="rating">★ 4.6 <span>(84 Google reviews)</span></p>
+        <p class="blurb">A ~1km linear park, tucked away from main roads — quieter and less crowded than Track 30th. Paved path good for jogging or a slow walk, public restrooms along the way, a 7-Eleven nearby for a post-walk drink. No shelter if it rains.</p>
+        <div class="card-foot">
+          <span class="price">— <span>free</span></span>
+        </div>
+        <p class="price-note">Open 24 hours.</p>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  Pulled from hotel sites, Tripadvisor, Expedia, and Kayak listings — prices and availability shift, so verify before booking. Distances are approximate walking distance to Bonifacio High Street.
+  <div class="ai-credit">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4">
+        <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+        <circle cx="-10" cy="-12" r="4"/>
+        <circle cx="10" cy="-12" r="4"/>
+        <line x1="0" y1="-28" x2="0" y2="-40"/>
+        <circle cx="0" cy="-43" r="3.5"/>
+        <line x1="-24" y1="0" x2="-34" y2="10"/>
+        <line x1="24" y1="0" x2="34" y2="10"/>
+      </g>
+    </svg>
+    <span>Compiled with AI assistance — verify details before booking or visiting.</span>
+  </div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+
+  function activateTab(name, updateHash) {
+    const tab = document.querySelector('.tab[data-tab="' + name + '"]');
+    if (!tab) return;
+
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+
+    const target = 'panel-' + name;
+    panels.forEach(p => p.classList.toggle('active', p.id === target));
+
+    if (updateHash) {
+      history.replaceState(null, '', '#' + name);
+    }
+
+    if (name === 'hotels' && window.map) {
+      setTimeout(() => window.map.invalidateSize(), 50);
+    }
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => activateTab(tab.dataset.tab, true));
+  });
+
+  window.addEventListener('hashchange', () => {
+    const name = location.hash.replace('#', '');
+    if (name) activateTab(name, false);
+  });
+
+  // On load, honor an existing #hash (e.g. linking directly to #restaurants)
+  const initial = location.hash.replace('#', '');
+  if (initial) activateTab(initial, false);
+</script>
+
+<script>
+  const map = window.map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5507296, 121.0503969], 16);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(map);
+
+  const goldIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:16px;height:16px;border-radius:50%;background:#B8763F;border:2px solid #20242B;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+  });
+  const rustIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:#7C93A8;border:2px solid #F4EFE6;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+  });
+  const foodIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:13px;height:13px;transform:rotate(45deg);background:#B8763F;border:2px solid #20242B;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [13, 13],
+    iconAnchor: [7, 7]
+  });
+  const coffeeIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:13px;height:13px;border-radius:3px;background:#3A3F4A;border:2px solid #F4EFE6;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [13, 13],
+    iconAnchor: [7, 7]
+  });
+
+  L.marker([14.5507296, 121.0503969], { icon: goldIcon })
+    .addTo(map)
+    .bindPopup('<strong>Bonifacio High Street</strong><br>Anchor point')
+    .bindTooltip('High Street', { permanent: true, direction: 'top', offset: [0, -6], className: 'map-label map-label-anchor' });
+
+  const hotels = [
+    { name: 'F1 Hotel Manila BGC', lat: 14.5539543, lng: 121.0492705, dist: '~500m from Bonifacio High Street' },
+    { name: 'Red Planet BGC – The Fort', lat: 14.5601308, lng: 121.0557166, dist: '~1.1km from Bonifacio High Street' }
+  ];
+
+  const restaurants = [
+    { name: 'Din Tai Fung (High Street)', lat: 14.5512086, lng: 121.0481394, dist: 'inside Bonifacio High Street' },
+    { name: 'Din Tai Fung (Uptown Parade)', lat: 14.5574032, lng: 121.0539735, dist: '~700m from Bonifacio High Street' },
+    { name: 'Wildflour Café + Bakery', lat: 14.5493881, lng: 121.0461915, dist: '~650m from Bonifacio High Street' },
+    { name: 'The Peak (Grand Hyatt)', lat: 14.5563470, lng: 121.0520194, dist: '~1km from Bonifacio High Street' },
+    { name: 'Kenshin Japanese Izakaya', lat: 14.5505956, lng: 121.0443005, dist: '~650m from Bonifacio High Street' },
+    { name: 'Genki Sushi (BGC Stopover)', lat: 14.554353, lng: 121.0457845, dist: '~650m from Bonifacio High Street' },
+    { name: 'Genki Sushi (SM Aura)', lat: 14.5470464, lng: 121.0546286, dist: '~700m from Bonifacio High Street' },
+    { name: 'Manam (Uptown Mall)', lat: 14.5566574, lng: 121.0539058, dist: '~1km from Bonifacio High Street' },
+    { name: 'Shake Shack', lat: 14.5516767, lng: 121.0482595, dist: 'inside Bonifacio High Street' }
+  ];
+
+  const coffeeSpots = [
+    { name: 'Single Origin', lat: 14.5516452, lng: 121.0493823, dist: 'inside Bonifacio High Street' },
+    { name: 'harlan + holden (BHS Central)', lat: 14.5514355, lng: 121.0485602, dist: 'inside Bonifacio High Street' },
+    { name: '% Arabica (Shangri-La)', lat: 14.5520351, lng: 121.0477343, dist: '~250m from Bonifacio High Street' },
+    { name: 'The Fat Seed Cafe + Roastery', lat: 14.5489663, lng: 121.0501654, dist: '~700m from Bonifacio High Street' },
+    { name: 'Starbucks Reserve (Central Square)', lat: 14.5520026, lng: 121.048478, dist: 'inside Bonifacio High Street' },
+    { name: 'Starbucks Reserve (8 Forbestown)', lat: 14.5506661, lng: 121.0440159, dist: '~650m from Bonifacio High Street' }
+  ];
+
+  hotels.forEach(h => {
+    L.marker([h.lat, h.lng], { icon: rustIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + h.name + '</strong><br>' + h.dist)
+      .bindTooltip(h.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
+  });
+
+  restaurants.forEach(r => {
+    L.marker([r.lat, r.lng], { icon: foodIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + r.name + '</strong><br>' + r.dist)
+      .bindTooltip(r.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
+  });
+
+  coffeeSpots.forEach(c => {
+    L.marker([c.lat, c.lng], { icon: coffeeIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + c.name + '</strong><br>' + c.dist)
+      .bindTooltip(c.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
+  });
+
+  const allMarkerPoints = [
+    [14.5507296, 121.0503969],
+    ...hotels.map(h => [h.lat, h.lng]),
+    ...restaurants.map(r => [r.lat, r.lng]),
+    ...coffeeSpots.map(c => [c.lat, c.lng])
+  ];
+  if (allMarkerPoints.length > 1) {
+    map.fitBounds(allMarkerPoints, { padding: [40, 60], maxZoom: 15 });
+  }
+</script>
+
+</body>
+</html>
