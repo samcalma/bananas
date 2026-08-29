@@ -302,6 +302,7 @@
   }
   .zone:first-child { border-left: none; }
   .zone.base { background: linear-gradient(180deg, rgba(31,111,92,.08), transparent); border-radius: 6px; }
+  .zone.base2 { background: linear-gradient(180deg, rgba(200,90,58,.08), transparent); border-radius: 6px; }
   .zone-name {
     font-family: ui-monospace, monospace;
     font-size: .72rem; font-weight: 600; letter-spacing: .02em;
@@ -309,11 +310,14 @@
     line-height: 1.15;
   }
   .zone.base .zone-name { color: var(--jade); }
+  .zone.base2 .zone-name { color: var(--clay); }
   .zone-dist {
     font-size: .62rem; color: var(--muted); font-style: italic;
     margin-top: .1rem; margin-bottom: .5rem;
     display: block;
   }
+  .zone-dist b.tst { color: var(--jade); font-style: normal; }
+  .zone-dist b.wc { color: var(--clay); font-style: normal; }
   .zone-spot {
     font-size: .74rem; color: #333;
     padding: .22rem 0; line-height: 1.25;
@@ -391,18 +395,51 @@
     </div>
 
     <div class="verdict">
-      <span><strong>Marco Polo</strong> is the value pick —</span>
-      <span class="delta">$3,938 all-in</span>
-      <span>cheapest with breakfast matched. Mondrian wins on newness &amp; design. Lanson Place offers apartment-style rooms on Hong Kong Island.</span>
+      <span><strong>Hopewell Hotel</strong> is the value pick —</span>
+      <span class="delta">$3,780 all-in</span>
+      <span>cheapest overall, in just 2 rooms instead of 3. Marco Polo is the closest Kowloon alternative. Mondrian wins on newness &amp; design. Lanson Place offers apartment-style rooms on Hong Kong Island. Airport transfer: ~35–40 min to the Tsim Sha Tsui hotels, ~45–50 min to the HK Island hotels (taxi estimates, not live-checked).</span>
     </div>
 
     <div class="map-wrap">
       <div id="hotel-map"></div>
-      <div class="map-cap">Marco Polo &amp; Mondrian sit in Tsim Sha Tsui, Kowloon. Lanson Place is across the harbour in Causeway Bay, Hong Kong Island.</div>
+      <div class="map-cap">Marco Polo &amp; Mondrian sit in Tsim Sha Tsui, Kowloon. Hopewell &amp; Lanson Place are across the harbour in Wan Chai / Causeway Bay, Hong Kong Island.</div>
     </div>
 
     <div class="hotel pick">
       <span class="pick-flag">Value pick</span>
+      <div class="hotel-top">
+        <div>
+          <h3>Hopewell Hotel</h3>
+          <div class="tag">15 Kennedy Road, Wan Chai · 5-star, 1,000 rooms</div>
+        </div>
+        <div class="price-block">
+          <div class="amt">$2,996</div>
+          <div class="unit">2 rooms · room only</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span class="chip good">Cheapest all-in</span>
+        <span class="chip good">Opened Dec 2024 — newest of the four</span>
+        <span class="chip good">Connected to Hopewell Mall</span>
+        <span class="chip good">Victoria Harbour views</span>
+        <span class="chip good">99m² connecting family suite</span>
+        <span class="chip warn">HK Island — harbour crossing to Kowloon</span>
+        <span class="chip warn">~45–50 min from airport</span>
+      </div>
+      <ul class="notes">
+        <li>The "6-person" room is actually a <strong>Premium Family Suite Plus</strong> — a connecting 99m² suite (61m² Premium City Suite + 38m² Premium City Room), not one shared room. Bedding: 2 single sofabeds, 2 single beds, 1 king bed, both sides overlooking Wan Chai</li>
+        <li>Plus a separate room for the other 2 — size/type not yet confirmed</li>
+        <li>99m² comfortably beats the competition: Mondrian's rooms run 21–27m², Lanson Place's standard rooms 35–55m² (their biggest connecting suite is 92m², just under Hopewell's)</li>
+        <li>Purpose-built tower above Hopewell Mall, opened December 10, 2024 — the newest building of the four options (Mondrian's tower dates to 2008, rebranded since)</li>
+        <li>One of the largest 5-star hotels in HK; hillside site facing Victoria Harbour, attached to Wan Chai's largest mall</li>
+        <li>Wan Chai puts you near Kam's Roast Goose and a short hop to the Sheung Wan coffee cluster</li>
+        <li>Airport to Wan Chai: ~45–50 min by taxi, or Airport Express to Hong Kong Station (24 min) + ~15 min taxi across the harbour — furthest of the four from HKIA</li>
+        <li>Breakfast is <strong>$28 / person / day</strong> — not in the total above</li>
+        <li>No guest review score pulled yet — worth checking before booking</li>
+      </ul>
+    </div>
+
+    <div class="hotel">
       <div class="hotel-top">
         <div>
           <h3>Marco Polo Hongkong</h3>
@@ -417,12 +454,14 @@
         <span class="chip good">Larger rooms</span>
         <span class="chip good">665-room inventory</span>
         <span class="chip good">Inside Harbour City mall</span>
+        <span class="chip good">~35–40 min from airport</span>
         <span class="chip">Outdoor heated pool</span>
         <span class="chip warn">Older / dated feel</span>
       </div>
       <ul class="notes">
         <li>8 min walk to Star Ferry, 10 min to Tsim Sha Tsui MTR — central to the itinerary</li>
         <li>Runs below the HK 5-star average rate; strong value for the space</li>
+        <li>Airport to Tsim Sha Tsui: ~35–40 min by taxi, or Airport Express to Kowloon Station (21 min) + short taxi/walk — closest of the four to HKIA</li>
         <li>Breakfast is <strong>$33 / person / day</strong> — not in the total above</li>
       </ul>
     </div>
@@ -439,17 +478,21 @@
         </div>
       </div>
       <div class="meta">
-        <span class="chip good">Newest property</span>
+        <span class="chip good">Design-forward rebrand</span>
         <span class="chip good">265m to MTR</span>
         <span class="chip good">40th-floor rooftop bar</span>
         <span class="chip good">Breakfast included</span>
-        <span class="chip warn">Rooms flagged small (2/10)</span>
+        <span class="chip good">~35–40 min from airport</span>
+        <span class="chip warn">Rooms 21–27m² (small)</span>
         <span class="chip warn">Value 2/10</span>
       </div>
       <ul class="notes">
         <li>Karin Krautgartner design, Carna steakhouse, Avoca rooftop bar</li>
         <li>9.0/10 guest score, location scores 9.5 — but space is the trade-off</li>
+        <li>Confirmed sizes: Signature rooms 21m², Premier rooms 27m², the sole Harbour Suite 50m² (12 available) — smallest standard rooms of the four options</li>
         <li>Reads as a couples/boutique stay more than a spread-out group base</li>
+        <li>Building dates to 2008 (formerly Hotel Panorama) — rebranded as Mondrian, not the newest construction despite the design-forward feel</li>
+        <li>Airport to Tsim Sha Tsui: ~35–40 min by taxi, or Airport Express to Kowloon Station (21 min) + short taxi/walk — tied closest of the four to HKIA</li>
       </ul>
     </div>
 
@@ -466,34 +509,37 @@
       </div>
       <div class="meta">
         <span class="chip good">Apartment-style rooms</span>
+        <span class="chip good">Rooms 35–55m²</span>
         <span class="chip good">Causeway Bay MTR steps away</span>
         <span class="chip good">Near Times Square mall</span>
         <span class="chip good">Kitchen facilities</span>
         <span class="chip warn">HK Island — harbour crossing to Kowloon</span>
         <span class="chip warn">No breakfast included</span>
+        <span class="chip warn">~45–50 min from airport</span>
       </div>
       <ul class="notes">
         <li>Serviced residence format — more living space and kitchen facilities vs a standard hotel room</li>
         <li>Causeway Bay is one of HK's top dining and shopping districts; Happy Valley racecourse nearby</li>
         <li>MTR Causeway Bay station is at the doorstep — ~15 min to Tsim Sha Tsui MTR, or 10 min via Star Ferry from Wan Chai</li>
+        <li>Airport to Causeway Bay: ~45–50 min by taxi, or Airport Express to Hong Kong Station (24 min) + ~15–20 min taxi across the harbour — furthest of the four from HKIA, tied with Hopewell</li>
         <li>Breakfast is <strong>$33 / person / day</strong> — not in the total above</li>
       </ul>
     </div>
 
     <div class="cost">
       <h3>Like-for-like cost</h3>
-      <div class="cap">All with breakfast matched, 3 rooms · 4 nights · 7 people</div>
+      <div class="cap">All with breakfast matched, 4 nights · 7 people (room count varies by hotel)</div>
       <table>
         <thead>
-          <tr><th>Line</th><th style="text-align:right">Marco Polo</th><th style="text-align:right">Mondrian</th><th style="text-align:right">Lanson Place</th></tr>
+          <tr><th>Line</th><th style="text-align:right">Hopewell</th><th style="text-align:right">Marco Polo</th><th style="text-align:right">Mondrian</th><th style="text-align:right">Lanson Place</th></tr>
         </thead>
         <tbody>
-          <tr><td>Rooms (4 nights)</td><td class="n">$3,014.29</td><td class="n">$4,621.63</td><td class="n">$4,241.45</td></tr>
-          <tr><td>Breakfast add-on</td><td class="n">+$924.00</td><td class="n">incl.</td><td class="n">+$924.00</td></tr>
-          <tr class="total"><td>All-in</td><td class="n">$3,938.29</td><td class="n">$4,621.63</td><td class="n">$5,165.45</td></tr>
+          <tr><td>Rooms (4 nights)</td><td class="n">$2,996.00</td><td class="n">$3,014.29</td><td class="n">$4,621.63</td><td class="n">$4,241.45</td></tr>
+          <tr><td>Breakfast add-on</td><td class="n">+$784.00</td><td class="n">+$924.00</td><td class="n">incl.</td><td class="n">+$924.00</td></tr>
+          <tr class="total"><td>All-in</td><td class="n">$3,780.00</td><td class="n">$3,938.29</td><td class="n">$4,621.63</td><td class="n">$5,165.45</td></tr>
         </tbody>
       </table>
-      <p class="fine">Marco Polo cheapest all-in by ~$683 vs Mondrian and ~$1,227 vs Lanson Place. Figures are quotes you pulled, not live-rechecked for Jan 2027.</p>
+      <p class="fine">Hopewell cheapest all-in by ~$158 vs Marco Polo, ~$842 vs Mondrian, ~$1,385 vs Lanson Place — but in 2 rooms (one sleeping 6) instead of 3. Figures are quotes you pulled, not live-rechecked for Jan 2027.</p>
     </div>
   </section>
 
@@ -535,15 +581,16 @@
     <div class="panel-head">
       <h2>Food</h2>
       <p>Three dishes to prioritise, with where to eat each. Ratings and notes from recent reviews.</p>
+      <p style="font-size:.85rem;color:var(--muted);font-style:italic;margin-top:.5rem;">Hotel choice is still open, so distances below are marked for both bases: <b class="tst" style="font-style:normal;">TST</b> = Tsim Sha Tsui (Marco Polo/Mondrian), <b class="wc" style="font-style:normal;">WC</b> = Wan Chai (Hopewell).</p>
     </div>
 
     <h3 class="food-cat">Dim sum <span class="cjk-sm">點心</span></h3>
     <div class="zones">
-      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zones-legend">Distance from your base — TST / Wan Chai</div>
       <div class="zone-track">
         <div class="zone base">
           <div class="zone-name">Tsim Sha Tsui</div>
-          <span class="zone-dist">your base</span>
+          <span class="zone-dist"><b class="tst">TST:</b> your base · <b class="wc">WC:</b> harbour crossing (~15–20 min)</span>
           <div class="zone-spot">One Dim Sum</div>
           <div class="zone-spot">Lung Dim Sum</div>
           <div class="zone-spot">Log Ye</div>
@@ -574,21 +621,21 @@
 
     <h3 class="food-cat">Roast meats <span class="cjk-sm">燒味</span></h3>
     <div class="zones">
-      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zones-legend">Distance from your base — TST / Wan Chai</div>
       <div class="zone-track">
         <div class="zone base">
           <div class="zone-name">Tsim Sha Tsui</div>
-          <span class="zone-dist">your base</span>
+          <span class="zone-dist"><b class="tst">TST:</b> your base · <b class="wc">WC:</b> harbour crossing</span>
           <div class="zone-spot">Yung Kee</div>
         </div>
-        <div class="zone">
+        <div class="zone base2">
           <div class="zone-name">Wan Chai</div>
-          <span class="zone-dist">harbour crossing</span>
+          <span class="zone-dist"><b class="tst">TST:</b> harbour crossing · <b class="wc">WC:</b> your base</span>
           <div class="zone-spot">Kam's Roast Goose</div>
         </div>
         <div class="zone">
           <div class="zone-name">Causeway Bay</div>
-          <span class="zone-dist">harbour crossing</span>
+          <span class="zone-dist"><b class="tst">TST:</b> harbour crossing · <b class="wc">WC:</b> 1 stop (Island line)</span>
           <div class="zone-spot">Kitchen One</div>
         </div>
       </div>
@@ -617,21 +664,21 @@
 
     <h3 class="food-cat">Wonton noodles <span class="cjk-sm">雲吞麵</span></h3>
     <div class="zones">
-      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zones-legend">Distance from your base — TST / Wan Chai</div>
       <div class="zone-track">
         <div class="zone base">
           <div class="zone-name">Tsim Sha Tsui</div>
-          <span class="zone-dist">your base</span>
+          <span class="zone-dist"><b class="tst">TST:</b> your base · <b class="wc">WC:</b> harbour crossing</span>
           <div class="zone-spot">Shek Kee</div>
         </div>
         <div class="zone">
           <div class="zone-name">Jordan</div>
-          <span class="zone-dist">1 MTR stop</span>
+          <span class="zone-dist"><b class="tst">TST:</b> 1 MTR stop · <b class="wc">WC:</b> harbour crossing</span>
           <div class="zone-spot">Mak Man Kee</div>
         </div>
         <div class="zone">
           <div class="zone-name">Central</div>
-          <span class="zone-dist">harbour crossing</span>
+          <span class="zone-dist"><b class="tst">TST:</b> harbour crossing (Star Ferry) · <b class="wc">WC:</b> 1 stop (Island line)</span>
           <div class="zone-spot">Tsim Chai Kee</div>
         </div>
       </div>
@@ -660,7 +707,7 @@
 
     <div class="cost" style="margin-top:1.6rem;">
       <h3>Group note</h3>
-      <p class="fine" style="font-style:normal;color:#333;">Most of these are small, no-frills shops with shared tables and queues. The dim sum halls (One Dim Sum, Lung) seat a party of 7 most comfortably — the wonton and roast-meat spots are better split into smaller groups or timed off-peak.</p>
+      <p class="fine" style="font-style:normal;color:#333;">Most of these are small, no-frills shops with shared tables and queues. The dim sum halls (One Dim Sum, Lung) seat a party of 7 most comfortably — the wonton and roast-meat spots are better split into smaller groups or timed off-peak. If the group ends up at Hopewell, Kam's Roast Goose becomes the on-doorstep option rather than a special trip.</p>
     </div>
   </section>
   <section class="panel" id="activities" role="tabpanel" aria-labelledby="tab-activities">
@@ -714,7 +761,8 @@
         <span class="chip warn">Bring passports</span>
       </div>
       <ul class="notes">
-        <li>Easy day trip via TurboJET / Cotai Water Jet — but note the China Ferry Terminal (near the Tsim Sha Tsui hotels) reportedly no longer runs the Macau route, so check departure point (Sheung Wan / Kowloon)</li>
+        <li>Easy day trip via TurboJET / Cotai Water Jet — the Macau Ferry Terminal is in Sheung Wan (HK Island); the China Ferry Terminal near the Tsim Sha Tsui hotels reportedly no longer runs the Macau route</li>
+        <li>That makes Macau notably easier from a <strong>Wan Chai</strong> base — Sheung Wan is a same-island MTR hop (~10 min, no harbour crossing) vs a cross-harbour trip from Tsim Sha Tsui first</li>
         <li>It's a separate immigration crossing — everyone needs their passport</li>
       </ul>
     </div>
@@ -766,9 +814,10 @@
       </div>
       <ul class="notes">
         <li>Undulating ridgeline that resembles a dragon's spine — panoramic views of Shek O, Big Wave Bay, and the South China Sea</li>
-        <li>Only a ~30 min uphill walk from the MTR to the trailhead — no car needed from Tsim Sha Tsui</li>
+        <li>Only a ~30 min uphill walk from the MTR to the trailhead — no car needed</li>
         <li>Finishes at <strong>Big Wave Bay</strong> beach, where there are cafés and food — good payoff to end on</li>
         <li>Well-signposted throughout; sturdy trainers or boots recommended for the steeper parts</li>
+        <li>Notably easier from a <strong>Wan Chai</strong> base: Shau Kei Wan is a same-island MTR ride (~15 min, no harbour crossing) vs a longer cross-harbour trip from Tsim Sha Tsui (~35–40 min)</li>
       </ul>
     </div>
 
@@ -785,23 +834,24 @@
     </div>
 
     <div style="margin-top:1.6rem;">
-      <p style="font-size:.9rem;color:var(--muted);font-style:italic;">Other trails if the group wants variety: Victoria Peak / HK Trail Section 1 (flat, easy, pairs with the Peak Tram day), Lantau Peak or Sunset Peak (tougher climbs, sunrise/sunset views), MacLehose Section 2 (13.5 km coastal, bigger day, further from Tsim Sha Tsui).</p>
+      <p style="font-size:.9rem;color:var(--muted);font-style:italic;">Other trails if the group wants variety: Victoria Peak / HK Trail Section 1 (flat, easy, pairs with the Peak Tram day), Lantau Peak or Sunset Peak (tougher climbs, sunrise/sunset views), MacLehose Section 2 (13.5 km coastal, bigger day — closer to a Wan Chai base than to Tsim Sha Tsui).</p>
     </div>
   </section>
 
   <section class="panel" id="coffee" role="tabpanel" aria-labelledby="tab-coffee">
     <div class="panel-head">
       <h2>Coffee <span class="cjk">咖啡</span></h2>
-      <p>Hong Kong's specialty scene is strong. One solid spot at base, the real cluster across the harbour.</p>
+      <p>Hong Kong's specialty scene is strong. One solid spot in Tsim Sha Tsui, the real cluster in Sheung Wan.</p>
+      <p style="font-size:.85rem;color:var(--muted);font-style:italic;margin-top:.5rem;">Hotel choice is still open: <b class="tst" style="font-style:normal;">TST</b> = Tsim Sha Tsui (Marco Polo/Mondrian), <b class="wc" style="font-style:normal;">WC</b> = Wan Chai (Hopewell). Sheung Wan is actually closer to a Wan Chai base than to TST.</p>
     </div>
 
-    <h3 class="food-cat">Walkable from base <span class="cjk-sm">尖沙咀</span></h3>
+    <h3 class="food-cat">Walkable from TST base <span class="cjk-sm">尖沙咀</span></h3>
     <div class="zones">
-      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zones-legend">Distance from your base — TST / Wan Chai</div>
       <div class="zone-track">
         <div class="zone base">
           <div class="zone-name">Tsim Sha Tsui</div>
-          <span class="zone-dist">your base</span>
+          <span class="zone-dist"><b class="tst">TST:</b> your base · <b class="wc">WC:</b> harbour crossing (~15–20 min)</span>
           <div class="zone-spot">Urban Coffee Roaster</div>
         </div>
       </div>
@@ -814,25 +864,25 @@
       <p class="food-note">The one serious specialty spot right in Tsim Sha Tsui — self-roasted beans, industrial-loft space, a quirky 2-way cup concept. Try the house espresso. Can get a queue, so it's a grab-and-go more than a linger.</p>
     </div>
 
-    <h3 class="food-cat">Worth the crossing <span class="cjk-sm">上環</span></h3>
+    <h3 class="food-cat">Sheung Wan cluster <span class="cjk-sm">上環</span></h3>
     <div class="zones">
-      <div class="zones-legend">Distance from Tsim Sha Tsui base</div>
+      <div class="zones-legend">Distance from your base — TST / Wan Chai</div>
       <div class="zone-track">
         <div class="zone base">
           <div class="zone-name">Tsim Sha Tsui</div>
-          <span class="zone-dist">your base</span>
+          <span class="zone-dist"><b class="tst">TST:</b> your base · <b class="wc">WC:</b> harbour crossing</span>
           <div class="zone-empty">—</div>
         </div>
         <div class="zone">
           <div class="zone-name">Sheung Wan</div>
-          <span class="zone-dist">harbour crossing</span>
+          <span class="zone-dist"><b class="tst">TST:</b> harbour crossing (~20–25 min) · <b class="wc">WC:</b> 2–3 stops (Island line, ~10 min)</span>
           <div class="zone-spot">Anchor Coffee</div>
           <div class="zone-spot">First Sip</div>
           <div class="zone-spot">commaa</div>
         </div>
       </div>
     </div>
-    <p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;">Sheung Wan is HK's specialty-coffee heartland — three excellent spots within a few blocks. Pairs naturally with a Central / Peak sightseeing day.</p>
+    <p style="font-size:.88rem;color:var(--muted);font-style:italic;margin-bottom:1rem;">Sheung Wan is HK's specialty-coffee heartland — three excellent spots within a few blocks. From Wan Chai it's a quick same-island MTR hop; from Tsim Sha Tsui, pair it with a Central / Peak sightseeing day since you're crossing the harbour anyway.</p>
 
     <div class="food-card pick">
       <div class="food-top">
@@ -886,7 +936,8 @@
     }
     try {
       const hotels = [
-        { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: true },
+        { name: "Hopewell", lat: 22.2758, lng: 114.1735, pick: true },
+        { name: "Marco Polo", lat: 22.2957, lng: 114.1683, pick: false },
         { name: "Mondrian", lat: 22.2975, lng: 114.1730, pick: false },
         { name: "Lanson Place", lat: 22.2804, lng: 114.1839, pick: false }
       ];
