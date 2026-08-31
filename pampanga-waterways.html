@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pampanga's Buried Water — Rivers, Swamps &amp; the Pinac</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root{
+    --silt:      #EDE6D6;
+    --river-ink: #1F3B36;
+    --deep-water:#134A5C;
+    --marsh:     #4E7A5E;
+    --flood:     #C9A24B;
+    --panel:     #FBF8F0;
+    --line:      #D8CFB8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--silt);
+    color:var(--river-ink);
+    font-family: 'Iowan Old Style','Georgia','Times New Roman',serif;
+  }
+  .sans{ font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif; }
+
+  header{
+    padding: 3.2rem 6vw 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header .kicker{
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--marsh);
+    margin: 0 0 0.6rem;
+  }
+  header h1{
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    font-weight: 500;
+    max-width: 16ch;
+  }
+  header p{
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 62ch;
+    color: #3A4A45;
+    margin: 0;
+  }
+
+  .layout{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 6vw 5rem;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 880px){
+    .layout{ grid-template-columns: 1fr; }
+  }
+
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1.4rem 1.4rem 1.6rem;
+    align-self: start;
+  }
+  .panel h2{
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 0 1rem;
+    color: var(--deep-water);
+  }
+  .legend-item{
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.95rem;
+    cursor: pointer;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  }
+  .legend-item:last-child{ margin-bottom: 0; }
+  .swatch{
+    width: 16px; height: 16px;
+    border-radius: 3px;
+    flex: none;
+    margin-top: 2px;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+  .legend-item .label{
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--river-ink);
+  }
+  .legend-item .sub{
+    font-size: 0.78rem;
+    color: #6B7A73;
+    margin-top: 0.15rem;
+    line-height: 1.4;
+  }
+  .legend-item input{ display:none; }
+  .legend-item.off .label, .legend-item.off .sub{ opacity: 0.38; }
+
+  .divider{
+    height: 1px;
+    background: var(--line);
+    margin: 1.3rem 0;
+  }
+
+  .note{
+    font-size: 0.82rem;
+    line-height: 1.55;
+    color: #5C6D66;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  }
+
+  #map{
+    width: 100%;
+    height: 640px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+  }
+  @media (max-width: 880px){
+    #map{ height: 480px; }
+  }
+
+  .leaflet-popup-content-wrapper{
+    background: var(--panel);
+    border-radius: 3px;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  }
+  .leaflet-popup-content{ margin: 0.85rem 1rem; }
+  .popup-title{
+    font-family: 'Iowan Old Style','Georgia',serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--river-ink);
+    margin: 0 0 0.35rem;
+  }
+  .popup-body{
+    font-size: 0.84rem;
+    line-height: 1.5;
+    color: #3A4A45;
+    max-width: 240px;
+  }
+  .popup-tag{
+    display:inline-block;
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--marsh);
+    margin-bottom: 0.4rem;
+  }
+
+  .lgu-label{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--river-ink);
+    font-size: 0.72rem;
+    padding: 1px 6px;
+    border-radius: 2px;
+    box-shadow: none;
+  }
+  .lgu-label-pinned{
+    font-weight: 700;
+    color: #5C2E3D;
+    border-color: #8A5A6B;
+  }
+  .lgu-label::before{ display:none; }
+
+  .hover-tip{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--river-ink);
+    font-size: 0.74rem;
+    padding: 2px 7px;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+  .hover-tip::before{ display:none; }
+
+  .leaflet-interactive{ cursor: pointer; }
+
+  /* --- Bot widget --- */
+  #bot-toggle{
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--deep-water);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(19,74,92,0.35);
+    z-index: 1000;
+    transition: transform 0.15s ease;
+  }
+  #bot-toggle:hover{ transform: scale(1.06); }
+  #bot-toggle svg{ width: 26px; height: 26px; }
+
+  #bot-panel{
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    width: 340px;
+    max-width: calc(100vw - 48px);
+    height: 440px;
+    max-height: calc(100vh - 140px);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1000;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  }
+  #bot-panel.open{ display: flex; }
+
+  #bot-header{
+    background: var(--deep-water);
+    color: #F2EFE5;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  #bot-header svg{ width: 20px; height: 20px; flex: none; }
+  #bot-header .title{
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+  #bot-header .sub{
+    font-size: 0.72rem;
+    color: #A9C4CC;
+    margin-top: 1px;
+  }
+  #bot-close{
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #CFE1E5;
+    font-size: 1.1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+  }
+
+  #bot-messages{
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .bot-msg{
+    max-width: 84%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.83rem;
+    line-height: 1.45;
+  }
+  .bot-msg.bot{
+    background: #EFEAE0;
+    color: var(--river-ink);
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+  .bot-msg.user{
+    background: var(--deep-water);
+    color: #F2EFE5;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  .bot-msg.bot strong{ color: var(--deep-water); }
+
+  #bot-suggestions{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0 0.9rem 0.7rem;
+  }
+  .bot-chip{
+    font-size: 0.72rem;
+    background: #EFEAE0;
+    border: 1px solid var(--line);
+    color: var(--river-ink);
+    border-radius: 12px;
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+  }
+  .bot-chip:hover{ background: #E3DCCB; }
+
+  #bot-form{
+    display: flex;
+    border-top: 1px solid var(--line);
+    padding: 0.6rem;
+    gap: 0.5rem;
+  }
+  #bot-input{
+    flex: 1;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.5rem 0.65rem;
+    font-size: 0.83rem;
+    font-family: inherit;
+    background: #FFFDF8;
+    color: var(--river-ink);
+  }
+  #bot-input:focus{ outline: 2px solid var(--deep-water); outline-offset: 1px; }
+  #bot-send{
+    background: var(--deep-water);
+    color: #F2EFE5;
+    border: none;
+    border-radius: 6px;
+    padding: 0 0.9rem;
+    font-size: 0.83rem;
+    cursor: pointer;
+  }
+
+  footer{
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 6vw 3.5rem;
+    font-family: -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.78rem;
+    color: #7C8B85;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="kicker sans">CENTRAL LUZON &middot; HYDROGRAPHY</p>
+  <h1>Pampanga sits in an old lakebed</h1>
+  <p>Before dikes and dams, most of the province was seasonal lake — the <em>pinac</em>. Rivers still trace the same low ground, and every rainy season the water tries to remember where it used to live. Toggle the layers to see the river system, the three historic swamp basins, and the towns built inside them.</p>
+</header>
+
+<div class="layout">
+  <div class="panel">
+    <h2>LAYERS</h2>
+
+    <label class="legend-item" data-layer="rivers">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#134A5C;"></span>
+      <span>
+        <span class="label">Rivers</span>
+        <span class="sub">Pampanga River and its main tributaries</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="swamps">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#4E7A5E;"></span>
+      <span>
+        <span class="label">Historic swamp basins</span>
+        <span class="sub">The three pinac — Candaba, Hagonoy, San Antonio</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="towns">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#C9A24B;"></span>
+      <span>
+        <span class="label">Towns in the basin</span>
+        <span class="sub">Municipalities built on the old lakebed</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="municipalities">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#8A5A6B;"></span>
+      <span>
+        <span class="label">All municipalities &amp; cities</span>
+        <span class="sub">All 22 LGUs of Pampanga, with the province outline</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="coast">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#2E6E8E;"></span>
+      <span>
+        <span class="label">Manila Bay outlet</span>
+        <span class="sub">Where the river system meets the bay</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="minor-rivers">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#5F8F7A;"></span>
+      <span>
+        <span class="label">Minor tributaries</span>
+        <span class="sub">Natural — smaller rivers feeding the system</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="structures">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#B0452E;"></span>
+      <span>
+        <span class="label">Dikes &amp; flood control</span>
+        <span class="sub">Man-made — current and planned structures</span>
+      </span>
+    </label>
+
+    <label class="legend-item" data-layer="terrain">
+      <input type="checkbox" checked>
+      <span class="swatch" style="background:#8B6F47;"></span>
+      <span>
+        <span class="label">High ground</span>
+        <span class="sub">Mt. Arayat and the Zambales range</span>
+      </span>
+    </label>
+
+    <div class="divider"></div>
+    <p class="note">Hover any river, swamp, town, or marker for its name; click for details. Solid dashed green lines are natural tributaries; red marks man-made dikes and flood-control work \u2014 current, under repair, or planned. Swamp and boundary shapes are approximate \u2014 drawn from historical descriptions and news reports, not a survey.</p>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<footer>
+  Sources: Britannica, Wikipedia (Pampanga River), Punto! Central Luzon, Grokipedia. Boundaries are illustrative approximations for orientation, not authoritative flood maps.
+</footer>
+
+<button id="bot-toggle" aria-label="Open map assistant">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="8" width="16" height="12" rx="3" stroke="#F2EFE5" stroke-width="1.6"/>
+    <circle cx="9" cy="14" r="1.4" fill="#F2EFE5"/>
+    <circle cx="15" cy="14" r="1.4" fill="#F2EFE5"/>
+    <path d="M12 8V5" stroke="#F2EFE5" stroke-width="1.6" stroke-linecap="round"/>
+    <circle cx="12" cy="3.6" r="1.3" fill="#F2EFE5"/>
+    <path d="M2 13v3M22 13v3" stroke="#F2EFE5" stroke-width="1.6" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<div id="bot-panel">
+  <div id="bot-header">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="16" height="12" rx="3" stroke="#F2EFE5" stroke-width="1.6"/>
+      <circle cx="9" cy="14" r="1.4" fill="#F2EFE5"/>
+      <circle cx="15" cy="14" r="1.4" fill="#F2EFE5"/>
+      <path d="M12 8V5" stroke="#F2EFE5" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="3.6" r="1.3" fill="#F2EFE5"/>
+    </svg>
+    <div>
+      <div class="title">Pinac Guide</div>
+      <div class="sub">Ask about the map — rivers, swamps, towns</div>
+    </div>
+    <button id="bot-close" aria-label="Close">&times;</button>
+  </div>
+  <div id="bot-messages"></div>
+  <div id="bot-suggestions"></div>
+  <form id="bot-form">
+    <input id="bot-input" type="text" placeholder="Ask e.g. \u201cwhere is Bacolor?\u201d" autocomplete="off" />
+    <button id="bot-send" type="submit">Ask</button>
+  </form>
+</div>
+
+<script>
+const map = L.map('map', { scrollWheelZoom: true }).setView([15.01, 120.70], 10);
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  maxZoom: 18
+}).addTo(map);
+
+// --- Rivers (approximate courses) ---
+const pampangaRiver = [
+  [15.62, 121.05], // Sierra Madre headwaters area (Nueva Ecija)
+  [15.45, 120.95],
+  [15.30, 120.85],
+  [15.18, 120.78],
+  [15.08, 120.72], // Arayat area
+  [14.98, 120.68],
+  [14.90, 120.66],
+  [14.82, 120.65],
+  [14.77, 120.655],
+  [14.7622, 120.6543] // mouth at Hagonoy, Bulacan / Manila Bay
+];
+
+const angatBagbagRiver = [
+  [14.92, 120.98], // Angat reservoir area
+  [14.90, 120.85],
+  [14.87, 120.75],
+  [14.82, 120.68],
+  [14.79, 120.66] // joins Pampanga via Bagbag
+];
+
+const guaguaChicoRiver = [
+  [15.10, 120.55], // near Bamban/Mabalacat side
+  [15.02, 120.58],
+  [14.95, 120.62],
+  [14.88, 120.65],
+  [14.83, 120.66]
+];
+
+const riverStyle = { color: '#134A5C', weight: 3.5, opacity: 0.85 };
+const riverHover  = { weight: 6, opacity: 1 };
+const botKB = [];
+
+function addRiver(coords, popupHtml, tooltipText, group, extraStyle) {
+  const line = L.polyline(coords, { ...riverStyle, ...(extraStyle || {}) });
+  line.bindPopup(popupHtml);
+  line.bindTooltip(tooltipText, { sticky: true, className: 'sans hover-tip' });
+  line.on('mouseover', () => line.setStyle(riverHover));
+  line.on('mouseout', () => line.setStyle({ ...riverStyle, ...(extraStyle || {}) }));
+  line.addTo(group);
+  botKB.push({ name: tooltipText, note: stripTags(popupHtml), layerKey: 'rivers', target: line });
+  return line;
+}
+
+function stripTags(html){
+  return html.replace(/<span class="popup-tag">.*?<\/span>/, '')
+             .replace(/<div class="popup-title">(.*?)<\/div>/, '$1 \u2014 ')
+             .replace(/<[^>]+>/g, '')
+             .trim();
+}
+
+const riverLayer = L.layerGroup().addTo(map);
+
+addRiver(pampangaRiver,
+  '<span class="popup-tag">Main river</span><div class="popup-title">Pampanga River (Rio Grande de la Pampanga)</div><div class="popup-body">The largest river in the province — about 261 km from the Sierra Madre to Manila Bay, draining a basin of roughly 10,400 km². Everything else in this region eventually flows into it.</div>',
+  'Pampanga River', riverLayer
+);
+
+addRiver(angatBagbagRiver,
+  '<span class="popup-tag">Tributary</span><div class="popup-title">Angat &amp; Bagbag Rivers</div><div class="popup-body">The Angat River joins the Pampanga via the Bagbag River — this confluence is the heart of the Pinac de Hagonoy.</div>',
+  'Angat / Bagbag River', riverLayer, { weight: 2.5 }
+);
+
+addRiver(guaguaChicoRiver,
+  '<span class="popup-tag">Tributary</span><div class="popup-title">Guagua / Chico Pampanga</div><div class="popup-body">Drains the western towns toward Guagua before joining the main delta system near Manila Bay.</div>',
+  'Guagua / Chico Pampanga River', riverLayer, { weight: 2.5 }
+);
+
+// --- Historic swamp basins (approximate polygons) ---
+const candabaSwamp = [
+  [15.08, 120.85],[15.05, 120.92],[14.98, 120.95],[14.90, 120.90],
+  [14.87, 120.80],[14.90, 120.72],[14.98, 120.70],[15.05, 120.75]
+];
+const hagonoySwamp = [
+  [14.88, 120.75],[14.86, 120.82],[14.80, 120.86],[14.72, 120.82],
+  [14.70, 120.72],[14.76, 120.66],[14.83, 120.68]
+];
+const sanAntonioSwamp = [
+  [15.18, 120.85],[15.15, 120.92],[15.08, 120.94],[15.02, 120.88],
+  [15.05, 120.80],[15.12, 120.79]
+];
+
+const swampStyle = { color: '#4E7A5E', weight: 1.5, fillColor: '#4E7A5E', fillOpacity: 0.22 };
+const swampHover  = { weight: 2.5, fillOpacity: 0.38 };
+const swampLayer = L.layerGroup().addTo(map);
+
+function addSwamp(coords, popupHtml, tooltipText) {
+  const poly = L.polygon(coords, swampStyle);
+  poly.bindPopup(popupHtml);
+  poly.bindTooltip(tooltipText, { sticky: true, className: 'sans hover-tip' });
+  poly.on('mouseover', () => poly.setStyle(swampHover));
+  poly.on('mouseout', () => poly.setStyle(swampStyle));
+  poly.addTo(swampLayer);
+  botKB.push({ name: tooltipText, note: stripTags(popupHtml), layerKey: 'swamps', target: poly });
+  return poly;
+}
+
+addSwamp(candabaSwamp,
+  '<span class="popup-tag">Pinac de Candaba</span><div class="popup-title">Candaba Swamp</div><div class="popup-body">Swells to more than 500 km² in the wet season. Towns: Candaba, San Luis, San Simon, and neighbors across into Bulacan and Nueva Ecija. Functions as a natural flood-retention basin for the whole system.</div>',
+  'Pinac de Candaba'
+);
+
+addSwamp(hagonoySwamp,
+  '<span class="popup-tag">Pinac de Hagonoy</span><div class="popup-title">Hagonoy Swamp</div><div class="popup-body">Where the Angat River meets the Pampanga via the Bagbag River. Covers Apalit, Calumpit, Hagonoy, Pulilan, Plaridel, Malolos, Paombong.</div>',
+  'Pinac de Hagonoy'
+);
+
+addSwamp(sanAntonioSwamp,
+  '<span class="popup-tag">Pinac de San Antonio</span><div class="popup-title">San Antonio Swamp</div><div class="popup-body">The smallest and least-discussed of the three, north of Mt. Arayat on the Nueva Ecija side of the basin.</div>',
+  'Pinac de San Antonio'
+);
+
+// --- Towns built in the basin ---
+const towns = [
+  { name: "Candaba", coords: [15.0906, 120.8281], note: "Sits directly inside the seasonal Candaba lake — the province's best-known flood town, now also a bird sanctuary in dry season." },
+  { name: "San Simon", coords: [15.0389, 120.7789], note: "Pinac de Candaba." },
+  { name: "San Luis", coords: [15.0447, 120.7628], note: "Pinac de Candaba." },
+  { name: "Apalit", coords: [14.9553, 120.7594], note: "Pinac de Hagonoy, near the Pampanga River's main channel." },
+  { name: "Calumpit", coords: [14.9167, 120.7667], note: "Pinac de Hagonoy — historically a river-trade town at the confluence." },
+  { name: "Hagonoy (Bulacan)", coords: [14.8333, 120.7333], note: "Where the Pampanga River empties into Manila Bay through a wide swampy delta." },
+  { name: "Guagua", coords: [14.9667, 120.6333], note: "Western delta town, drained by the Guagua/Chico Pampanga branch." },
+  { name: "San Fernando (capital)", coords: [15.0333, 120.6833], note: "Provincial capital — on slightly higher, better-drained ground than the eastern basin towns." }
+];
+
+const townLayer = L.layerGroup().addTo(map);
+towns.forEach(t => {
+  const marker = L.circleMarker(t.coords, {
+    radius: 6,
+    color: '#8A6D1E',
+    weight: 1.5,
+    fillColor: '#C9A24B',
+    fillOpacity: 0.9
+  }).bindPopup(
+    `<span class="popup-tag">Town</span><div class="popup-title">${t.name}</div><div class="popup-body">${t.note}</div>`
+  );
+  marker.bindTooltip(t.name, { direction: 'top', offset: [0, -6], className: 'sans hover-tip' });
+  marker.on('mouseover', () => marker.setRadius(9));
+  marker.on('mouseout', () => marker.setRadius(6));
+  marker.addTo(townLayer);
+  botKB.push({ name: t.name, note: `${t.name} \u2014 ${t.note}`, layerKey: 'towns', target: marker });
+});
+
+// --- High ground ---
+const highGround = [
+  { name: "Mount Arayat", coords: [15.2028, 120.7422], note: "Isolated volcanic outlier at 1,033 m — the one major relief feature inside the plain itself, near the province's southeastern boundary." },
+  { name: "Zambales Range (western border)", coords: [15.15, 120.35], note: "Forms Pampanga's mountainous western edge, home to the Aeta communities; includes Mount Pinatubo." }
+];
+
+const terrainLayer = L.layerGroup().addTo(map);
+highGround.forEach(h => {
+  const marker = L.circleMarker(h.coords, {
+    radius: 7,
+    color: '#5C4A2E',
+    weight: 1.5,
+    fillColor: '#8B6F47',
+    fillOpacity: 0.9
+  }).bindPopup(
+    `<span class="popup-tag">High ground</span><div class="popup-title">${h.name}</div><div class="popup-body">${h.note}</div>`
+  );
+  marker.bindTooltip(h.name, { direction: 'top', offset: [0, -7], className: 'sans hover-tip' });
+  marker.on('mouseover', () => marker.setRadius(10));
+  marker.on('mouseout', () => marker.setRadius(7));
+  marker.addTo(terrainLayer);
+  botKB.push({ name: h.name, note: `${h.name} \u2014 ${h.note}`, layerKey: 'terrain', target: marker });
+});
+
+// --- Province outline (approximate) ---
+const pampangaOutline = [
+  [15.28, 120.55], [15.26, 120.62], [15.22, 120.65], [15.20, 120.72],
+  [15.18, 120.80], [15.10, 120.90], [15.02, 120.93], [14.95, 120.90],
+  [14.88, 120.85], [14.80, 120.80], [14.72, 120.75], [14.68, 120.68],
+  [14.70, 120.62], [14.78, 120.58], [14.85, 120.52], [14.92, 120.46],
+  [15.00, 120.40], [15.08, 120.35], [15.16, 120.36], [15.22, 120.42],
+  [15.27, 120.48]
+];
+
+const outlineStyle = { color: '#8A5A6B', weight: 2, fillOpacity: 0, dashArray: '6 4' };
+const outlineHover = { weight: 3.5, dashArray: '2 2' };
+const provinceOutline = L.polygon(pampangaOutline, outlineStyle);
+provinceOutline.bindPopup(
+  '<span class="popup-tag">Province boundary</span><div class="popup-title">Pampanga (approximate outline)</div><div class="popup-body">Land area roughly 2,002 km² (excluding Angeles City). Bounded by Tarlac and Nueva Ecija to the north, Bulacan to the east, Bataan and Zambales to the west, Manila Bay to the south.</div>'
+);
+provinceOutline.bindTooltip('Pampanga province boundary', { sticky: true, className: 'sans hover-tip' });
+provinceOutline.on('mouseover', () => provinceOutline.setStyle(outlineHover));
+provinceOutline.on('mouseout', () => provinceOutline.setStyle(outlineStyle));
+botKB.push({ name: 'Province boundary', note: 'Pampanga province (approximate outline) \u2014 land area roughly 2,002 km\u00b2 (excluding Angeles City). Bounded by Tarlac and Nueva Ecija to the north, Bulacan to the east, Bataan and Zambales to the west, Manila Bay to the south.', layerKey: null, target: provinceOutline });
+
+// --- All 22 cities/municipalities ---
+const allLGUs = [
+  { name: "Angeles City", coords: [15.1449, 120.5887], note: "Independent, highly urbanized city — geographically in Pampanga but administered separately from the province." },
+  { name: "San Fernando (capital)", coords: [15.0333, 120.6833], note: "Component city, provincial capital." },
+  { name: "Mabalacat", coords: [15.2333, 120.5667], note: "Component city in the north, on higher ground near Clark." },
+  { name: "Apalit", coords: [14.9553, 120.7594], note: "Municipality, Pinac de Hagonoy." },
+  { name: "Arayat", coords: [15.1493, 120.7692], note: "Municipality, named for and site of Mount Arayat." },
+  { name: "Bacolor", coords: [14.9984, 120.6527], note: "Former provincial capital, buried by 1991 Pinatubo lahar. \u201cAthens of Pampanga.\u201d" },
+  { name: "Candaba", coords: [15.0933, 120.8283], note: "Municipality sitting inside the seasonal Candaba lake." },
+  { name: "Floridablanca", coords: [14.9833, 120.5333], note: "Western municipality toward the Zambales foothills." },
+  { name: "Guagua", coords: [14.9667, 120.6333], note: "Western delta town on the Guagua/Chico Pampanga branch." },
+  { name: "Lubao", coords: [14.9333, 120.6000], note: "Municipality in the southwestern delta." },
+  { name: "Macabebe", coords: [14.9333, 120.7333], note: "Delta municipality near the Pampanga River mouth." },
+  { name: "Magalang", coords: [15.2167, 120.6667], note: "Northern municipality near Mount Arayat's slopes." },
+  { name: "Masantol", coords: [14.9167, 120.7167], note: "Low-lying delta municipality." },
+  { name: "Mexico", coords: [15.0667, 120.7167], note: "Central municipality." },
+  { name: "Minalin", coords: [14.9667, 120.7333], note: "Central-south municipality near the river." },
+  { name: "Porac", coords: [15.0667, 120.5333], note: "Largest municipality by land area, extending into the Zambales range and Pinatubo's eastern slopes." },
+  { name: "San Luis", coords: [15.0447, 120.7628], note: "Municipality, Pinac de Candaba." },
+  { name: "San Simon", coords: [15.0389, 120.7789], note: "Municipality, Pinac de Candaba." },
+  { name: "Santa Ana", coords: [15.0833, 120.7500], note: "Central municipality near the river." },
+  { name: "Santa Rita", coords: [14.9833, 120.6667], note: "Small central municipality." },
+  { name: "Santo Tomas", coords: [14.9500, 120.7000], note: "Small central municipality." },
+  { name: "Sasmuan", coords: [14.936, 120.623], note: "Southernmost municipality, on Manila Bay — lowest elevation in the province." }
+];
+
+const municipalityLayer = L.layerGroup().addTo(map);
+allLGUs.forEach(m => {
+  const marker = L.circleMarker(m.coords, {
+    radius: 5,
+    color: '#5C2E3D',
+    weight: 1.3,
+    fillColor: '#8A5A6B',
+    fillOpacity: 0.85
+  }).bindPopup(
+    `<span class="popup-tag">Municipality</span><div class="popup-title">${m.name}</div><div class="popup-body">${m.note}</div>`
+  );
+  marker.bindTooltip(m.name, {
+    permanent: !!m.labeled,
+    direction: 'top',
+    offset: [0, -6],
+    className: m.labeled ? 'sans lgu-label lgu-label-pinned' : 'sans lgu-label hover-tip'
+  });
+  marker.on('mouseover', () => marker.setRadius(8));
+  marker.on('mouseout', () => marker.setRadius(5));
+  marker.addTo(municipalityLayer);
+  botKB.push({ name: m.name, note: `${m.name} \u2014 ${m.note}`, layerKey: 'municipalities', target: marker });
+});
+
+// --- Manila Bay outlet / coastline ---
+const manilaBayLabel = L.layerGroup();
+
+// Approximate bay-facing coastline of the delta (Sasmuan to Hagonoy)
+const deltaCoast = [
+  [14.88, 120.68], [14.83, 120.66], [14.78, 120.65],
+  [14.74, 120.655], [14.70, 120.65], [14.66, 120.64]
+];
+const coastStyle = { color: '#2E6E8E', weight: 4, opacity: 0.8 };
+const coastHover = { weight: 7, opacity: 1 };
+const coastLine = L.polyline(deltaCoast, coastStyle);
+coastLine.bindPopup(
+  '<span class="popup-tag">Coastline</span><div class="popup-title">Manila Bay shore</div><div class="popup-body">The province\u2019s only stretch of open bay coastline, from Sasmuan east through the delta toward Hagonoy, Bulacan. Everything upstream drains here, not to the open ocean directly \u2014 Manila Bay itself opens to the South China Sea much further out.</div>'
+);
+coastLine.bindTooltip('Manila Bay shore', { sticky: true, className: 'sans hover-tip' });
+coastLine.on('mouseover', () => coastLine.setStyle(coastHover));
+coastLine.on('mouseout', () => coastLine.setStyle(coastStyle));
+coastLine.addTo(manilaBayLabel);
+botKB.push({ name: 'Manila Bay shore', note: stripTags(coastLine.getPopup().getContent()), layerKey: 'coast', target: coastLine });
+
+const outlets = [
+  { name: "Pampanga River mouth", coords: [14.7622, 120.6543], note: "Main outlet, in Hagonoy, Bulacan \u2014 the river's name-giving province isn't actually where it meets the bay." },
+  { name: "Guagua/Chico outlet (Sasmuan)", coords: [14.90, 120.60], note: "Western branch, draining through Sasmuan \u2014 Pampanga's only municipality with direct Manila Bay coastline." }
+];
+outlets.forEach(o => {
+  const marker = L.circleMarker(o.coords, {
+    radius: 7,
+    color: '#1B4A5F',
+    weight: 1.5,
+    fillColor: '#2E6E8E',
+    fillOpacity: 0.9
+  }).bindPopup(
+    `<span class="popup-tag">River mouth</span><div class="popup-title">${o.name}</div><div class="popup-body">${o.note}</div>`
+  );
+  marker.bindTooltip(o.name, { direction: 'top', offset: [0, -7], className: 'sans hover-tip' });
+  marker.on('mouseover', () => marker.setRadius(10));
+  marker.on('mouseout', () => marker.setRadius(7));
+  marker.addTo(manilaBayLabel);
+  botKB.push({ name: o.name, note: `${o.name} \u2014 ${o.note}`, layerKey: 'coast', target: marker });
+});
+
+manilaBayLabel.addTo(map);
+
+// --- Minor / natural tributaries (approximate courses, distinct from man-made structures) ---
+const minorRiverStyle = { color: '#5F8F7A', weight: 2, opacity: 0.85, dashArray: '4 3' };
+const minorRiverHover = { weight: 4, opacity: 1 };
+const minorRiverLayer = L.layerGroup().addTo(map);
+
+function addMinorRiver(coords, name, note) {
+  const line = L.polyline(coords, minorRiverStyle);
+  line.bindPopup(`<span class="popup-tag">Minor tributary \u2014 natural</span><div class="popup-title">${name}</div><div class="popup-body">${note}</div>`);
+  line.bindTooltip(name, { sticky: true, className: 'sans hover-tip' });
+  line.on('mouseover', () => line.setStyle(minorRiverHover));
+  line.on('mouseout', () => line.setStyle(minorRiverStyle));
+  line.addTo(minorRiverLayer);
+  botKB.push({ name, note: `${name} (natural tributary) \u2014 ${note}`, layerKey: 'minor-rivers', target: line });
+  return line;
+}
+
+addMinorRiver(
+  [[15.55, 121.05], [15.45, 121.00], [15.38, 120.96], [15.30, 120.90]],
+  'Pe\u00f1aranda River',
+  'Eastern-basin tributary draining forested areas of the Sierra Madre in Nueva Ecija, joining the Pampanga system upstream.'
+);
+
+addMinorRiver(
+  [[15.70, 121.15], [15.55, 121.05], [15.42, 120.98]],
+  'Pantabangan River',
+  'Flows from the Caraballo Mountains and feeds the Pantabangan Dam before joining the wider basin.'
+);
+
+addMinorRiver(
+  [[15.45, 120.75], [15.35, 120.80], [15.28, 120.85]],
+  'Coronel-Santor Rivers',
+  'Eastern-basin tributaries in Nueva Ecija \u2014 among the principal streams feeding the Pampanga River from the east.'
+);
+
+addMinorRiver(
+  [[15.05, 120.44], [15.02, 120.47], [14.99, 120.51], [14.97, 120.55]],
+  'Porac River',
+  'Rises in the Zambales range on Pampanga\u2019s western boundary; drains toward the delta through small inlets rather than joining the main river trunk directly.'
+);
+
+addMinorRiver(
+  [[14.98, 120.46], [14.95, 120.50], [14.92, 120.54], [14.90, 120.58]],
+  'Gumain River',
+  'Western Pampanga stream from the Zambales foothills near Floridablanca, one of the province\u2019s own (not Nueva Ecija-sourced) waterways.'
+);
+
+addMinorRiver(
+  [[14.92, 120.47], [14.90, 120.51], [14.88, 120.55]],
+  'Caulaman River',
+  'Small western stream alongside the Porac and Gumain, draining the Zambales-side foothills toward the coast.'
+);
+
+// --- Man-made dikes & flood control structures ---
+const structureStyle = { color: '#B0452E', weight: 3, opacity: 0.85 };
+const structureHoverLine = { weight: 5.5, opacity: 1 };
+const structureLayer = L.layerGroup().addTo(map);
+
+function addStructurePoint(coords, name, note, tag) {
+  const marker = L.circleMarker(coords, {
+    radius: 7,
+    color: '#7A2E1E',
+    weight: 1.5,
+    fillColor: '#B0452E',
+    fillOpacity: 0.9
+  });
+  marker.bindPopup(`<span class="popup-tag">${tag || 'Flood control \u2014 man-made'}</span><div class="popup-title">${name}</div><div class="popup-body">${note}</div>`);
+  marker.bindTooltip(name, { direction: 'top', offset: [0, -7], className: 'sans hover-tip' });
+  marker.on('mouseover', () => marker.setRadius(10));
+  marker.on('mouseout', () => marker.setRadius(7));
+  marker.addTo(structureLayer);
+  botKB.push({ name, note: `${name} (man-made structure) \u2014 ${note}`, layerKey: 'structures', target: marker });
+  return marker;
+}
+
+function addStructureLine(coords, name, note, tag) {
+  const line = L.polyline(coords, structureStyle);
+  line.bindPopup(`<span class="popup-tag">${tag || 'Flood control \u2014 man-made'}</span><div class="popup-title">${name}</div><div class="popup-body">${note}</div>`);
+  line.bindTooltip(name, { sticky: true, className: 'sans hover-tip' });
+  line.on('mouseover', () => line.setStyle(structureHoverLine));
+  line.on('mouseout', () => line.setStyle(structureStyle));
+  line.addTo(structureLayer);
+  botKB.push({ name, note: `${name} (man-made structure) \u2014 ${note}`, layerKey: 'structures', target: line });
+  return line;
+}
+
+addStructurePoint(
+  [15.1495, 120.8105],
+  'Candating gabion wall (Arayat)',
+  'DPWH began building gabion (stone-filled wire mesh) walls here on May 21, 2026, replacing a dike that had collapsed three times since 2024 and destroyed over 20 homes \u2014 a shift toward \u201cnature-based\u201d flood control.',
+  'Under construction, 2026'
+);
+
+addStructurePoint(
+  [15.155, 120.815],
+  'Cupang dike repair (Arayat)',
+  'Another Arayat flood-control structure damaged by 2025 storms, under repair alongside Candating \u2014 DPWH aims to complete sheet-pile work here.',
+  'Under repair, 2026'
+);
+
+addStructurePoint(
+  [15.20, 120.83],
+  'Planned upstream dams & detention basins',
+  'DPWH has announced five dams and detention basins planned upstream of Arayat by 2027, intended to slow water before it reaches low-lying communities. Location is indicative \u2014 exact sites not yet finalized.',
+  'Planned, target 2027'
+);
+
+addStructurePoint(
+  [14.90, 120.72],
+  'Pampanga Delta Development Project (Phase II)',
+  'Long-stalled sequel to the 1990s PDDP, covering the delta towns (Macabebe, Masantol, Sasmuan area) \u2014 revived after years of opposition and funding freezes tied to the 2025\u201326 flood-control corruption scandal.',
+  'Revived / Phase II'
+);
+
+addStructureLine(
+  [[14.90, 120.60], [14.80, 120.65], [14.70, 120.68], [14.60, 120.72]],
+  'Manila Bay Integrated Flood Control, Coastal Defense & Expressway Project',
+  'Large coastal dike-and-road project spanning Bulacan, Pampanga, and Bataan along Manila Bay, aimed at stopping tidal flooding. Now in ADB-assisted feasibility study \u2014 route shown here is approximate/conceptual, not a finalized alignment.',
+  'Feasibility study, 2026'
+);
+
+// --- Layer toggles + click-to-locate ---
+const layers = { rivers: riverLayer, swamps: swampLayer, towns: townLayer, terrain: terrainLayer, municipalities: municipalityLayer, coast: manilaBayLabel, 'minor-rivers': minorRiverLayer, structures: structureLayer };
+document.querySelectorAll('.legend-item').forEach(item => {
+  const key = item.dataset.layer;
+  const checkbox = item.querySelector('input');
+  checkbox.addEventListener('change', () => {
+    if (checkbox.checked) {
+      map.addLayer(layers[key]);
+      item.classList.remove('off');
+    } else {
+      map.removeLayer(layers[key]);
+      item.classList.add('off');
+    }
+  });
+  item.addEventListener('click', (e) => {
+    if (e.target.tagName !== 'INPUT') {
+      const wasOff = item.classList.contains('off');
+      checkbox.checked = !checkbox.checked;
+      checkbox.dispatchEvent(new Event('change'));
+      // when turning a layer on by clicking its label, also fly to it
+      if (wasOff) {
+        const bounds = layers[key].getBounds ? layers[key].getBounds() : null;
+        if (bounds && bounds.isValid && bounds.isValid()) {
+          map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 12, duration: 0.8 });
+        }
+      }
+    }
+  });
+});
+
+// --- Bot widget ---
+const botToggle = document.getElementById('bot-toggle');
+const botPanel = document.getElementById('bot-panel');
+const botClose = document.getElementById('bot-close');
+const botMessages = document.getElementById('bot-messages');
+const botSuggestions = document.getElementById('bot-suggestions');
+const botForm = document.getElementById('bot-form');
+const botInput = document.getElementById('bot-input');
+
+function botSay(html) {
+  const div = document.createElement('div');
+  div.className = 'bot-msg bot';
+  div.innerHTML = html;
+  botMessages.appendChild(div);
+  botMessages.scrollTop = botMessages.scrollHeight;
+}
+
+function userSay(text) {
+  const div = document.createElement('div');
+  div.className = 'bot-msg user';
+  div.textContent = text;
+  botMessages.appendChild(div);
+  botMessages.scrollTop = botMessages.scrollHeight;
+}
+
+function locateOnMap(entry) {
+  if (!entry.target) return;
+  if (entry.layerKey && layers[entry.layerKey]) {
+    map.addLayer(layers[entry.layerKey]);
+    const item = document.querySelector(`.legend-item[data-layer="${entry.layerKey}"]`);
+    if (item) {
+      item.classList.remove('off');
+      item.querySelector('input').checked = true;
+    }
+  }
+  if (entry.target.getBounds) {
+    const b = entry.target.getBounds();
+    if (b.isValid()) map.flyToBounds(b, { padding: [60, 60], maxZoom: 13, duration: 0.9 });
+  } else if (entry.target.getLatLng) {
+    map.flyTo(entry.target.getLatLng(), 13, { duration: 0.9 });
+  }
+  entry.target.openPopup && entry.target.openPopup();
+}
+
+function findMatches(query) {
+  const q = query.toLowerCase().trim();
+  if (!q) return [];
+  const scored = botKB.map(entry => {
+    const name = entry.name.toLowerCase();
+    const note = entry.note.toLowerCase();
+    let score = 0;
+    if (name === q) score = 100;
+    else if (name.includes(q)) score = 60;
+    else if (q.split(/\s+/).some(word => word.length > 2 && name.includes(word))) score = 40;
+    else if (note.includes(q)) score = 25;
+    else if (q.split(/\s+/).some(word => word.length > 3 && note.includes(word))) score = 10;
+    return { entry, score };
+  }).filter(s => s.score > 0).sort((a, b) => b.score - a.score);
+  return scored.slice(0, 3).map(s => s.entry);
+}
+
+function handleQuery(raw) {
+  userSay(raw);
+  const q = raw.toLowerCase();
+
+  if (/^(hi|hello|hey)\b/.test(q)) {
+    botSay("Hi! Ask me about any river, swamp, town, or landmark on this map \u2014 I'll point you to it.");
+    return;
+  }
+  if (/ocean|manila bay|sea|outlet|mouth/.test(q)) {
+    const entry = botKB.find(e => e.name === 'Manila Bay shore');
+    botSay(`<strong>${entry.name}</strong><br>${entry.note}`);
+    locateOnMap(entry);
+    return;
+  }
+
+  const matches = findMatches(q);
+  if (matches.length === 0) {
+    botSay("I couldn't match that to anything on the map. Try a place name like \u201cCandaba,\u201d \u201cBacolor,\u201d or \u201cArayat,\u201d or ask about rivers, swamps, or the coastline.");
+    return;
+  }
+  matches.forEach((entry, i) => {
+    botSay(`<strong>${entry.name}</strong><br>${entry.note}`);
+    if (i === 0) locateOnMap(entry);
+  });
+}
+
+const starterChips = ["Where is Bacolor?", "Where do the rivers meet the ocean?", "What is the Candaba Swamp?", "Tell me about Mount Arayat", "What dikes are being built?", "What are the minor tributaries?"];
+starterChips.forEach(text => {
+  const chip = document.createElement('button');
+  chip.className = 'bot-chip';
+  chip.type = 'button';
+  chip.textContent = text;
+  chip.addEventListener('click', () => handleQuery(text));
+  botSuggestions.appendChild(chip);
+});
+
+botToggle.addEventListener('click', () => {
+  botPanel.classList.add('open');
+  if (botMessages.children.length === 0) {
+    botSay("I'm the Pinac Guide \u2014 a lightweight, on-page assistant (not a live AI model, just a search over this map's own data). Ask me where something is, and I'll show you.");
+  }
+  botInput.focus();
+});
+botClose.addEventListener('click', () => botPanel.classList.remove('open'));
+
+botForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const val = botInput.value.trim();
+  if (!val) return;
+  handleQuery(val);
+  botInput.value = '';
+});
+
+</script>
+
+</body>
+</html>
