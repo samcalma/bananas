@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mall of Asia / Pasay Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  :root{
+    --ink:#20242B;
+    --ink-soft:#3A3F4A;
+    --gold:#B8763F;
+    --gold-soft:#D9A876;
+    --cream:#F4EFE6;
+    --rust:#7C93A8;
+    --line: rgba(32,36,43,0.14);
+    --shadow: 0 18px 40px -22px rgba(32,36,43,0.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Manrope', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  .hero{
+    position:relative;
+    background:var(--ink);
+    color:var(--cream);
+    padding:64px 24px 56px;
+    overflow:hidden;
+  }
+  .hero-inner{ max-width:1040px; margin:0 auto; position:relative; z-index:2; }
+  .eyebrow{
+    font-size:12.5px; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--gold-soft); margin:0 0 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{ content:""; width:22px; height:1px; background:var(--gold); display:inline-block; }
+  .hero h1{ font-size:clamp(34px,5.4vw,58px); line-height:1.04; margin:0 0 16px; }
+  .hero h1 em{ font-style:italic; color:var(--gold-soft); }
+  .hero p.sub{ max-width:560px; font-size:16px; line-height:1.6; color:#D9DED2; margin:0; }
+  .cross-link{
+    display:inline-block; margin-top:16px; font-size:13.5px; font-weight:600;
+    color:var(--gold-soft); text-decoration:none;
+    border-bottom:1px solid rgba(217,168,118,0.4); padding-bottom:1px;
+  }
+  .cross-link:hover{ color:#fff; border-bottom-color:#fff; }
+  .skyline{ position:absolute; right:-40px; bottom:-6px; width:56%; max-width:620px; opacity:0.5; z-index:1; }
+  .ai-watermark{ position:absolute; right:24px; top:20px; width:64px; height:64px; z-index:1; pointer-events:none; }
+
+  .event-banner{ background:var(--gold); color:var(--ink); }
+  .event-inner{ max-width:1040px; margin:0 auto; padding:18px 24px; display:flex; flex-wrap:wrap; gap:6px 16px; align-items:baseline; }
+  .event-tag{ font-size:11px; text-transform:uppercase; letter-spacing:0.12em; font-weight:700; width:100%; }
+  .event-title{ margin:0; font-size:16px; }
+  .event-note{ margin:0; font-size:12.5px; flex-basis:100%; }
+  .event-inner .note-btn{ color:var(--ink); text-decoration:underline; font-weight:700; }
+
+  .tabbar{
+    max-width:1040px; margin:22px auto 0; padding:0 24px;
+    display:flex; gap:8px; border-bottom:1px solid var(--line);
+    overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .tabbar::-webkit-scrollbar{ display:none; }
+  .tab{
+    border:none; background:transparent; color:var(--ink-soft);
+    font-family:'Manrope',sans-serif; font-size:14.5px; font-weight:600;
+    padding:12px 6px 14px; white-space:nowrap; flex-shrink:0; cursor:pointer;
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .tab:hover{ color:var(--ink); }
+  .tab.active{ color:var(--ink); border-bottom-color:var(--gold); }
+  .tab:focus-visible{ outline:2px solid var(--rust); outline-offset:2px; }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  main{ max-width:1040px; margin:0 auto; padding:40px 24px 80px; }
+  .count{ font-size:13px; color:var(--ink-soft); margin:0 0 20px; }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(min(260px,100%),1fr));
+    gap:20px; margin-bottom:40px;
+  }
+  .card{
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    padding:22px 22px 20px; display:flex; flex-direction:column; gap:10px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{ transform:translateY(-3px); box-shadow:var(--shadow); }
+  .card-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .card h3{ font-size:19px; margin:0; line-height:1.25; }
+  .tier{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; font-weight:700;
+    padding:4px 9px; border-radius:999px; white-space:nowrap; flex-shrink:0;
+  }
+  .tier.luxury{ background:rgba(200,162,74,0.18); color:#8A6A1F; }
+  .tier.business{ background:rgba(18,49,43,0.10); color:var(--ink); }
+  .tier.boutique{ background:rgba(166,82,46,0.14); color:var(--rust); }
+  .area{ font-size:12.5px; color:var(--ink-soft); font-weight:600; margin:-4px 0 0; }
+  .blurb{ font-size:13.8px; line-height:1.55; color:#3C4B45; margin:0; flex-grow:1; }
+  .card-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:6px; padding-top:12px; border-top:1px dashed var(--line); font-size:12.5px;
+  }
+  .price{ font-weight:700; color:var(--ink); }
+  .price span{ font-weight:500; color:var(--ink-soft); font-size:11.5px; }
+  .note-btn{ color:var(--rust); font-weight:600; text-decoration:none; }
+  .price-note{ margin:8px 0 0; font-size:12px; line-height:1.5; color:var(--ink-soft); }
+  .verify{
+    font-size:11.5px; color:#8A6A1F; font-weight:600; margin:4px 0 0;
+  }
+
+  .ig-link{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; margin-left:8px; border-radius:7px;
+    color:var(--ink-soft); transition:color .15s ease, background .15s ease; vertical-align:middle;
+  }
+  .ig-link:hover{
+    color:#fff;
+    background:radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+  }
+  .ig-link svg{ width:16px; height:16px; }
+
+  .area-map{ margin-top:56px; }
+  .map-card{
+    background:#fff; border:1px solid var(--line); border-radius:16px;
+    overflow:hidden; box-shadow:var(--shadow);
+  }
+  .map-caption{
+    margin:0; padding:12px 16px; font-size:12.5px; color:var(--ink-soft);
+    border-top:1px dashed var(--line);
+  }
+  .map-label{
+    background:var(--ink); color:var(--cream); border:none; border-radius:6px;
+    padding:3px 8px; font-family:'Manrope', sans-serif; font-size:11.5px; font-weight:600;
+    box-shadow:0 2px 6px rgba(18,49,43,0.25);
+  }
+  .map-label::before{ border-top-color:var(--ink) !important; }
+  .map-label-anchor{ background:var(--gold); color:var(--ink); }
+  .map-label-anchor::before{ border-top-color:var(--gold) !important; }
+
+  footer{ max-width:1040px; margin:0 auto; padding:0 24px 60px; font-size:12.5px; color:var(--ink-soft); }
+  .ai-credit{
+    display:flex; align-items:center; gap:8px; margin-top:14px; padding-top:14px;
+    border-top:1px dashed var(--line); color:var(--ink-soft); opacity:0.75;
+  }
+  .ai-credit svg{ width:18px; height:18px; flex-shrink:0; }
+  .ai-credit span{ font-size:11.5px; }
+
+  @media (prefers-reduced-motion: reduce){ .card{ transition:none; } }
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Pasay City · Metro Manila</p>
+    <h1>Mall of <em>Asia</em><br>Guide</h1>
+    <p class="sub">SM Mall of Asia on the Manila Bay waterfront — shopping, dining, the MOA Eye, and the Arena, with hotels within walking distance on Seaside Boulevard.</p>
+    <a class="cross-link" href="bgc-guide.html">↔ Also see the BGC / High Street guide</a>
+  </div>
+  <svg class="skyline" viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg">
+    <g fill="#F4EFE6">
+      <rect x="10" y="150" width="40" height="110"/>
+      <rect x="60" y="120" width="30" height="140"/>
+      <rect x="100" y="170" width="36" height="90"/>
+      <rect x="146" y="80" width="26" height="180"/>
+      <rect x="182" y="140" width="40" height="120"/>
+      <rect x="232" y="60" width="28" height="200"/>
+      <rect x="270" y="130" width="34" height="130"/>
+      <rect x="314" y="100" width="30" height="160"/>
+      <rect x="354" y="150" width="36" height="110"/>
+      <rect x="400" y="110" width="28" height="150"/>
+      <rect x="438" y="140" width="34" height="120"/>
+    </g>
+  </svg>
+  <svg class="ai-watermark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g transform="translate(50,55)" fill="none" stroke="#F4EFE6" stroke-width="3" opacity="0.14">
+      <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+      <circle cx="-10" cy="-12" r="4"/>
+      <circle cx="10" cy="-12" r="4"/>
+      <line x1="0" y1="-28" x2="0" y2="-40"/>
+      <circle cx="0" cy="-43" r="3.5"/>
+      <line x1="-24" y1="0" x2="-34" y2="10"/>
+      <line x1="24" y1="0" x2="34" y2="10"/>
+    </g>
+  </svg>
+</section>
+
+<aside class="event-banner">
+  <div class="event-inner">
+    <span class="event-tag">Upcoming concert</span>
+    <p class="event-title"><strong>Maroon 5 — Asia 2027 Tour</strong> · SM Mall of Asia Arena · Feb 7, 2027</p>
+    <p class="event-note">News reports confirm the Manila show in February 2027. Confirm the exact date and tickets before planning around it.</p>
+    <a class="note-btn" href="https://ticketmaster.ph/activity/detail/27ph_maroon5" target="_blank" rel="noopener">Tickets on Ticketmaster ↗</a>
+  </div>
+</aside>
+
+<nav class="tabbar" role="tablist" aria-label="Section">
+  <button class="tab active" data-tab="hotels" role="tab" aria-selected="true">Hotels</button>
+  <button class="tab" data-tab="dining" role="tab" aria-selected="false">Dining</button>
+  <button class="tab" data-tab="shopping" role="tab" aria-selected="false">Shopping</button>
+  <button class="tab" data-tab="todo" role="tab" aria-selected="false">Things to Do</button>
+  <button class="tab" data-tab="notes" role="tab" aria-selected="false">Good to Know</button>
+</nav>
+
+<main>
+  <div class="panel active" id="panel-hotels">
+    <p class="count">3 hotels</p>
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Conrad Manila</h3>
+          <span class="tier business">Luxury</span>
+        </div>
+        <p class="area">Seaside Blvd cor Coral Way · inside the MOA Complex</p>
+        <p class="blurb">Waterfront hotel in the MOA Complex. SM by the Bay, the bay-view attraction, is on the ground floor of the Conrad. Rating and rates not verified here.</p>
+        <p class="verify">Verify rates and reviews before booking.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>TRYP by Wyndham Mall of Asia</h3>
+          <span class="tier business">Mid-range</span>
+        </div>
+        <p class="area">MOA Complex, Pasay · walking distance to the mall</p>
+        <p class="blurb">Wyndham's mid-range brand, near the mall and the Arena. Good option if you want to be close without the Conrad's price. Reviews and rates not verified here.</p>
+        <div class="card-foot">
+          <a class="note-btn" href="https://wyndhamhotels.com/tryp/manila-philippines/tryp-by-wyndham-mall-of-asia-manila/overview" target="_blank" rel="noopener">website ↗</a>
+        </div>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Microtel by Wyndham Mall of Asia</h3>
+          <span class="tier boutique">Budget</span>
+        </div>
+        <p class="area">MOA Complex, Pasay</p>
+        <p class="blurb">Budget-oriented Wyndham property near the mall. Listed on several booking sites; check current reviews before committing.</p>
+        <p class="verify">Verify rates and reviews before booking.</p>
+      </article>
+
+    </div>
+
+    <div class="map-card area-map">
+      <div id="area-leaflet-map" style="width:100%; height:380px;"></div>
+      <p class="map-caption">Centered on the Mall of Asia complex — circles mark hotels, diamonds mark dining, squares mark attractions. Coordinates are approximate.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-dining">
+    <p class="count">Dining options</p>
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Main Mall food court &amp; restaurants</h3>
+          <span class="tier business">Mixed</span>
+        </div>
+        <p class="area">Main Mall and Entertainment Mall</p>
+        <p class="blurb">The mall has a broad mix of Filipino, Japanese, Korean, and international chains across the Main Mall and Entertainment Mall. Sources name Jollibee, McDonald's, and KFC among the casual options.</p>
+        <p class="verify">Specific restaurants and hours need checking on the SM site.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Buffet and dine-in restaurants</h3>
+          <span class="tier luxury">Buffet</span>
+        </div>
+        <p class="area">Mall of Asia Complex</p>
+        <p class="blurb">Buffet spots are a recurring recommendation in dining guides; Vikings and Buffet 101 are named in one source. Names, prices, and hours not verified here.</p>
+        <p class="verify">Verify each restaurant's current details.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Seaside Boulevard al fresco dining</h3>
+          <span class="tier boutique">Outdoor</span>
+        </div>
+        <p class="area">Seaside Boulevard</p>
+        <p class="blurb">Outdoor restaurants along Seaside Boulevard, facing the bay, are a draw for evening meals.</p>
+        <p class="verify">Ask for a bay-facing table for sunset.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-shopping">
+    <p class="count">Shopping</p>
+    <div class="grid">
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>SM Mall of Asia</h3>
+          <span class="tier luxury">Mall</span>
+        </div>
+        <p class="area">Seaside Blvd, Pasay City</p>
+        <p class="blurb">Main Mall and Entertainment Mall with a large mix of local and international brands. Sources cite 600–700+ stores and restaurants; the exact count varies by source.</p>
+        <div class="card-foot">
+          <a class="note-btn" href="https://www.smprime.com/" target="_blank" rel="noopener">SM Prime ↗</a>
+        </div>
+        <p class="price-note">Hours: 10:00 AM – 10:00 PM daily per most sources. Individual stores vary.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>IKEA Mall of Asia</h3>
+          <span class="tier business">Home</span>
+        </div>
+        <p class="area">MOA Square, Mall of Asia Complex</p>
+        <p class="blurb">Full IKEA store with a restaurant and Swedish Bites counter.</p>
+        <p class="price-note">Store: 10:00 AM – 10:00 PM daily. Restaurant: 9:30 AM – 9:30 PM. Swedish Bites: 8:30 AM – 10:00 PM.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-todo">
+    <p class="count">Things to do</p>
+    <div class="grid">
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>MOA Eye</h3>
+          <span class="tier luxury">Ferris wheel</span>
+        </div>
+        <p class="area">Mall of Asia Complex</p>
+        <p class="blurb">Giant Ferris wheel on the bay side. Sources call it the country's tallest or largest — pick one and verify before quoting it.</p>
+        <p class="verify">Ticket price and hours need verifying on the day.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Ice Skating Rink</h3>
+          <span class="tier business">Activity</span>
+        </div>
+        <p class="area">3/F Main Mall, SM Mall of Asia</p>
+        <p class="blurb">Olympic-size rink open all year, a good indoor option when it's hot.</p>
+        <p class="price-note">Hours: 10:00 AM – 9:00 PM daily per one source.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>SM by the Bay</h3>
+          <span class="tier boutique">Attraction</span>
+        </div>
+        <p class="area">G/F S Maison, Conrad Hotel, Seaside Blvd</p>
+        <p class="blurb">Paid bay-view attraction. One source lists it at 10:00 AM – 10:00 PM daily, last entry 9:00 PM.</p>
+        <p class="verify">Sources disagree on pricing — check at the entrance or online.</p>
+      </article>
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Mall of Asia Arena</h3>
+          <span class="tier business">Venue</span>
+        </div>
+        <p class="area">Complex, SM Mall of Asia, J.W. Diokno Blvd</p>
+        <p class="blurb">Major indoor venue for concerts and sports events. Check the event calendar before you go.</p>
+        <p class="price-note">Phone: +63 2 8470 2222.</p>
+      </article>
+
+      <article class="card" data-tier="luxury">
+        <div class="card-top">
+          <h3>Maroon 5 — Asia 2027 Tour</h3>
+          <span class="tier luxury">Concert</span>
+        </div>
+        <p class="area">SM Mall of Asia Arena · Feb 7, 2027</p>
+        <p class="blurb">Manila stop on Maroon 5's Asia 2027 tour, announced in August 2026. News reports confirm the Manila show in February 2027; confirm the exact date and ticket sales on Ticketmaster before planning around it.</p>
+        <div class="card-foot">
+          <a class="note-btn" href="https://ticketmaster.ph/activity/detail/27ph_maroon5" target="_blank" rel="noopener">tickets ↗</a>
+        </div>
+        <p class="verify">Date and ticket details not independently confirmed beyond news coverage.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Manila Bay sunset</h3>
+          <span class="tier boutique">Free</span>
+        </div>
+        <p class="area">Seaside Boulevard</p>
+        <p class="blurb">The bay-side promenade is a standard evening walk, and the globe statue at the roundabout is a common photo stop.</p>
+      </article>
+
+    </div>
+  </div>
+
+  <div class="panel" id="panel-notes">
+    <div class="grid">
+
+      <article class="card" data-tier="business">
+        <div class="card-top">
+          <h3>Getting there</h3>
+          <span class="tier business">Transport</span>
+        </div>
+        <p class="blurb">MOA sits on Seaside Boulevard in Pasay, on the Manila Bay side, at the southern tip of EDSA. Grab is the simplest option from most hotels; check traffic, since EDSA can be slow in rush hour.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Crowds</h3>
+          <span class="tier boutique">Timing</span>
+        </div>
+        <p class="blurb">Sources say the mall is packed on weekends and holidays. Weekday visits are easier.</p>
+      </article>
+
+      <article class="card" data-tier="boutique">
+        <div class="card-top">
+          <h3>Holiday hours</h3>
+          <span class="tier boutique">Check ahead</span>
+        </div>
+        <p class="blurb">Holiday schedules change each year. Check the SM Supermalls site before a December visit.</p>
+      </article>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  Compiled from SM Prime, travel-guide, and booking-site listings. Hours, prices, and availability change — verify before you go. Coordinates are approximate.
+  <div class="ai-credit">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <g transform="translate(50,55)" fill="none" stroke="currentColor" stroke-width="4">
+        <rect x="-24" y="-28" width="48" height="36" rx="7"/>
+        <circle cx="-10" cy="-12" r="4"/>
+        <circle cx="10" cy="-12" r="4"/>
+        <line x1="0" y1="-28" x2="0" y2="-40"/>
+        <circle cx="0" cy="-43" r="3.5"/>
+        <line x1="-24" y1="0" x2="-34" y2="10"/>
+        <line x1="24" y1="0" x2="34" y2="10"/>
+      </g>
+    </svg>
+    <span>Compiled with AI assistance — verify details before booking or visiting.</span>
+  </div>
+</footer>
+
+<script>
+  const tabs = document.querySelectorAll('.tab');
+  const panels = document.querySelectorAll('.panel');
+
+  function activateTab(name, updateHash) {
+    const tab = document.querySelector('.tab[data-tab="' + name + '"]');
+    if (!tab) return;
+    tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    const target = 'panel-' + name;
+    panels.forEach(p => p.classList.toggle('active', p.id === target));
+    if (updateHash) history.replaceState(null, '', '#' + name);
+    if (name === 'hotels' && window.map) setTimeout(() => window.map.invalidateSize(), 50);
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => activateTab(tab.dataset.tab, true)));
+  window.addEventListener('hashchange', () => {
+    const name = location.hash.replace('#', '');
+    if (name) activateTab(name, false);
+  });
+  const initial = location.hash.replace('#', '');
+  if (initial) activateTab(initial, false);
+</script>
+
+<script>
+  const map = window.map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5335, 120.9827], 15);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19,
+    subdomains: 'abcd'
+  }).addTo(map);
+
+  const rustIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:14px;height:14px;border-radius:50%;background:#7C93A8;border:2px solid #F4EFE6;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [14, 14], iconAnchor: [7, 7]
+  });
+  const foodIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:13px;height:13px;transform:rotate(45deg);background:#B8763F;border:2px solid #20242B;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [13, 13], iconAnchor: [7, 7]
+  });
+  const attractionIcon = L.divIcon({
+    className: '',
+    html: '<div style="width:13px;height:13px;border-radius:3px;background:#3A3F4A;border:2px solid #F4EFE6;box-shadow:0 2px 6px rgba(0,0,0,0.35);"></div>',
+    iconSize: [13, 13], iconAnchor: [7, 7]
+  });
+
+  L.marker([14.5335, 120.9827], { icon: foodIcon })
+    .addTo(map)
+    .bindPopup('<strong>SM Mall of Asia Arena</strong><br>Map center (approximate)')
+    .bindTooltip('SM Mall of Asia Arena', { permanent: true, direction: 'top', offset: [0, -6], className: 'map-label map-label-anchor' });
+
+  const hotels = [
+    { name: 'Conrad Manila', lat: 14.5346, lng: 120.9815 },
+    { name: 'TRYP by Wyndham MOA', lat: 14.5360, lng: 120.9830 },
+    { name: 'Microtel by Wyndham MOA', lat: 14.5365, lng: 120.9835 }
+  ];
+  const attractions = [
+    { name: 'MOA Eye', lat: 14.5343, lng: 120.9810 },
+    { name: 'Mall of Asia Arena', lat: 14.5335, lng: 120.9827 },
+    { name: 'SM by the Bay', lat: 14.5346, lng: 120.9815 }
+  ];
+
+  hotels.forEach(h => {
+    L.marker([h.lat, h.lng], { icon: rustIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + h.name + '</strong>')
+      .bindTooltip(h.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
+  });
+  attractions.forEach(a => {
+    L.marker([a.lat, a.lng], { icon: attractionIcon })
+      .addTo(map)
+      .bindPopup('<strong>' + a.name + '</strong>')
+      .bindTooltip(a.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
+  });
+</script>
+
+</body>
+</html>
