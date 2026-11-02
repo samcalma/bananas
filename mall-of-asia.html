@@ -473,7 +473,12 @@
 </script>
 
 <script>
-  const map = window.map = L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5335, 120.9827], 15);
+  if (typeof L === 'undefined') {
+    document.getElementById('area-leaflet-map').innerHTML =
+      '<div style="padding:24px;font-size:13.5px;line-height:1.6;">Map could not load. <a href="https://www.openstreetmap.org/#map=16/14.5335/120.9827" target="_blank" rel="noopener">Open the area in OpenStreetMap ↗</a></div>';
+  }
+  const map = window.map = (typeof L !== 'undefined') ? L.map('area-leaflet-map', { scrollWheelZoom: false }).setView([14.5335, 120.9827], 15) : null;
+  if (map) {
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -525,6 +530,7 @@
       .bindPopup('<strong>' + a.name + '</strong>')
       .bindTooltip(a.name, { permanent: true, direction: 'top', offset: [0, -5], className: 'map-label' });
   });
+  }
 </script>
 
 </body>
