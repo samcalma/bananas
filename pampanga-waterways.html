@@ -473,8 +473,8 @@
 <script>
 const map = L.map('map', { scrollWheelZoom: true }).setView([15.01, 120.70], 10);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a>',
   maxZoom: 18
 }).addTo(map);
 

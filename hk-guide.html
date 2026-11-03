@@ -944,9 +944,9 @@
         { name: "Lanson Place", lat: 22.2804, lng: 114.1839, pick: false }
       ];
       const map = L.map('hotel-map', { scrollWheelZoom: false }).setView([22.289, 114.176], 14);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
-        attribution: '&copy; OpenStreetMap'
+        attribution: 'Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
       }).addTo(map);
       hotels.forEach(h => {
         L.marker([h.lat, h.lng]).addTo(map)
